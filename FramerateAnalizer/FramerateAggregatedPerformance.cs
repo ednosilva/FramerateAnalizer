@@ -1,9 +1,8 @@
-using MathNet.Numerics.Statistics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FPSAnalizer;
+namespace FramerateAnalizer;
 
 public class FramerateAggregatedPerformance
 {
@@ -31,15 +30,10 @@ public class FramerateAggregatedPerformance
         FramerateCaptures = framerateCaptures;
 
         FramerateGeomeanStats = new FrameratePerformanceStats(
-            GeometricMean(framerateCaptures.Select(c => c.AverageFramerate)),
-            GeometricMean(framerateCaptures.Select(c => c.TenPercentLowFramerate)),
-            GeometricMean(framerateCaptures.Select(c => c.OnePercentLowFramerate)),
-            GeometricMean(framerateCaptures.Select(c => c.ZeroPointOnePercentLowFramerate)));
-    }
-
-    private decimal GeometricMean(IEnumerable<decimal> values)
-    {
-        return (decimal)Statistics.GeometricMean(values.Select(v => (double)v));
+            Statistics.GeometricMean(framerateCaptures.Select(c => c.AverageFramerate).ToList()),
+            Statistics.GeometricMean(framerateCaptures.Select(c => c.TenPercentLowFramerate).ToList()),
+            Statistics.GeometricMean(framerateCaptures.Select(c => c.OnePercentLowFramerate).ToList()),
+            Statistics.GeometricMean(framerateCaptures.Select(c => c.ZeroPointOnePercentLowFramerate).ToList()));
     }
 
     public FrameratePerformanceStats RelativePerformance(FramerateAggregatedPerformance performanceReference)
@@ -49,13 +43,13 @@ public class FramerateAggregatedPerformance
 
         return new FrameratePerformanceStats(
             FramerateGeomeanStats.Average /
-                performanceReference.FramerateGeomeanStats.Average * 100m,
+                performanceReference.FramerateGeomeanStats.Average * 100.0,
             FramerateGeomeanStats.TenPercentLowAverage /
-                performanceReference.FramerateGeomeanStats.TenPercentLowAverage * 100m,
+                performanceReference.FramerateGeomeanStats.TenPercentLowAverage * 100.0,
             FramerateGeomeanStats.OnePercentLowAverage /
-                performanceReference.FramerateGeomeanStats.OnePercentLowAverage * 100m,
+                performanceReference.FramerateGeomeanStats.OnePercentLowAverage * 100.0,
             FramerateGeomeanStats.ZeroPointOnePercentLowAverage /
-                performanceReference.FramerateGeomeanStats.ZeroPointOnePercentLowAverage * 100m);
+                performanceReference.FramerateGeomeanStats.ZeroPointOnePercentLowAverage * 100.0);
     }
 
     public string Cpu { get; set; }

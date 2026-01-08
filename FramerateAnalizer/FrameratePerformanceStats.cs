@@ -1,16 +1,26 @@
-using MathNet.Numerics.Statistics;
 using System.Collections.Generic;
 
-namespace FPSAnalizer;
+namespace FramerateAnalizer;
 
-public record class FrameratePerformanceStats(decimal Average, decimal TenPercentLowAverage,
-    decimal OnePercentLowAverage, decimal ZeroPointOnePercentLowAverage)
+public record class FrameratePerformanceStats(double Average, double TenPercentLowAverage,
+    double OnePercentLowAverage, double ZeroPointOnePercentLowAverage)
 {
-    public decimal AggregatedPerformance()
+    public double AggregatedPerformance()
     {
-        IList<double> values = [(double)Average, (double)TenPercentLowAverage,
-            (double)OnePercentLowAverage, (double)ZeroPointOnePercentLowAverage];
+        List<double> values = 
+        [
+            Average,
+            Average,
+            Average,
+            Average,
+            TenPercentLowAverage,
+            TenPercentLowAverage,
+            TenPercentLowAverage,
+            OnePercentLowAverage,
+            OnePercentLowAverage,
+            ZeroPointOnePercentLowAverage
+        ];
 
-        return (decimal)Statistics.GeometricMean(values);
+        return Statistics.GeometricMean(values);
     }
 };

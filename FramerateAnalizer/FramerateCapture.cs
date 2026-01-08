@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace FPSAnalizer;
+namespace FramerateAnalizer;
 
 public class FramerateCapture
 {
@@ -25,13 +25,13 @@ public class FramerateCapture
 
     public int RunCount { get; set; }
 
-    public decimal AverageFramerate { get; set; }
+    public double AverageFramerate { get; set; }
 
-    public decimal TenPercentLowFramerate { get; set; }
+    public double TenPercentLowFramerate { get; set; }
 
-    public decimal OnePercentLowFramerate { get; set; }
+    public double OnePercentLowFramerate { get; set; }
 
-    public decimal ZeroPointOnePercentLowFramerate { get; set; }
+    public double ZeroPointOnePercentLowFramerate { get; set; }
 
     public override bool Equals(object? obj)
     {

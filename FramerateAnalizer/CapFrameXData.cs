@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 
-namespace FPSAnalizer
+namespace FramerateAnalizer
 {
     public class CapFrameXData
     {
@@ -113,26 +113,26 @@ namespace FPSAnalizer
     public class CaptureData
     {
         [JsonPropertyName("TimeInSeconds")]
-        public List<decimal> TimeInSeconds { get; set; }
+        public List<double> TimeInSeconds { get; set; }
         
         [JsonIgnore]
-        public decimal Duration => TimeInSeconds?.Count > 0 ? TimeInSeconds[^1] - TimeInSeconds[0] : 0;
+        public double Duration => TimeInSeconds?.Count > 0 ? TimeInSeconds[^1] - TimeInSeconds[0] : 0;
         
         [JsonIgnore]
         public int FrameCount => TimeInSeconds?.Count ?? 0;
         
         [JsonIgnore]
-        public decimal AverageFps => FrameCount > 0 && Duration > 0 ? FrameCount / Duration : 0;
+        public double AverageFps => FrameCount > 0 && Duration > 0 ? FrameCount / Duration : 0;
         
         [JsonIgnore]
-        public List<decimal> FrameTimes
+        public List<double> FrameTimes
         {
             get
             {
                 if (TimeInSeconds == null || TimeInSeconds.Count < 2)
-                    return new List<decimal>();
+                    return new List<double>();
                 
-                var frameTimes = new List<decimal>();
+                var frameTimes = new List<double>();
                 for (int i = 1; i < TimeInSeconds.Count; i++)
                 {
                     frameTimes.Add((TimeInSeconds[i] - TimeInSeconds[i - 1]) * 1000);
@@ -142,6 +142,6 @@ namespace FPSAnalizer
         }
         
         [JsonIgnore]
-        public decimal AverageFrameTime => FrameTimes.Count > 0 ? FrameTimes.Average() : 0;
+        public double AverageFrameTime => FrameTimes.Count > 0 ? FrameTimes.Average() : 0;
     }
 }

@@ -1,19 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FPSAnalizer;
+namespace FramerateAnalizer;
 
 public class RunStatistics
 {
     public int RunIndex { get; set; }
     public string Hash { get; set; }
     public int FrameCount { get; set; }
-    public decimal Duration { get; set; }
-    public decimal AverageFps { get; set; }
-    public decimal AverageFrameTime { get; set; }
-    public decimal TenPercentLowFramerate { get; set; }
-    public decimal OnePercentLowFramerate { get; set; }
-    public decimal ZeroPointOnePercentLowFramerate { get; set; }
+    public double Duration { get; set; }
+    public double AverageFps { get; set; }
+    public double AverageFrameTime { get; set; }
+    public double TenPercentLowFramerate { get; set; }
+    public double OnePercentLowFramerate { get; set; }
+    public double ZeroPointOnePercentLowFramerate { get; set; }
     
     public RunStatistics(CaptureRun run)
     {
@@ -29,24 +29,24 @@ public class RunStatistics
 
         if (frameTimes.Count > 0)
         {
-            var sortedFrameTimes = new List<decimal>(frameTimes);
+            var sortedFrameTimes = new List<double>(frameTimes);
             sortedFrameTimes.Sort((a, b) => b.CompareTo(a));
 
-            TenPercentLowFramerate = GetAverageFps(sortedFrameTimes, 0.1m);
-            OnePercentLowFramerate = GetAverageFps(sortedFrameTimes, 0.01m);
-            ZeroPointOnePercentLowFramerate = GetAverageFps(sortedFrameTimes, 0.001m);
+            TenPercentLowFramerate = GetAverageFps(sortedFrameTimes, 0.1);
+            OnePercentLowFramerate = GetAverageFps(sortedFrameTimes, 0.01);
+            ZeroPointOnePercentLowFramerate = GetAverageFps(sortedFrameTimes, 0.001);
         }
     }
 
-    private decimal GetAverageFps(List<decimal> sortedFrameTimes, decimal percentage)
+    private double GetAverageFps(List<double> sortedFrameTimes, double percentage)
     {
         int framesUsed = (int)(sortedFrameTimes.Count * percentage);
 
         if (framesUsed == 0)
             return sortedFrameTimes[0];
 
-        decimal averageFrameTime = sortedFrameTimes.Take(framesUsed).Average();
-        decimal averageFps = 1000m / averageFrameTime;
+        double averageFrameTime = sortedFrameTimes.Take(framesUsed).Average();
+        double averageFps = 1000.0 / averageFrameTime;
 
         return averageFps;
     }
