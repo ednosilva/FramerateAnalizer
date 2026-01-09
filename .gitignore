@@ -1,0 +1,15 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/FramerateAnalizer/config
+/.vs/FramerateAnalizer/CopilotIndices/17.14.1561.44479
+/.vs/FramerateAnalizer/DesignTimeBuild
+/.vs/FramerateAnalizer/FileContentIndex
+/.vs/FramerateAnalizer/v17
+/.vs/ProjectEvaluation
+/FramerateAnalizer/bin/Debug/net10.0-windows7.0
+/FramerateAnalizer/obj
+/FrameRateAnalizer.Site/bin/Debug/net10.0-windows7.0
+/FrameRateAnalizer.Site/obj
+/.vs
