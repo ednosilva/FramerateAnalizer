@@ -1,6 +1,6 @@
 ﻿@page "/"
 
-@using FPSAnalizer
+@using FramerateAnalizer
 @using MudBlazor
 @using System.Text.Json
 @using Plotly.Blazor
@@ -10,7 +10,7 @@
 
 <PageTitle>Home</PageTitle>
 
-@* <MudDataGrid 
+<MudDataGrid 
     T="FramerateCapture" 
     Items="@Captures" 
     RowClick="@RowClicked"
@@ -18,37 +18,63 @@
     Height="430px"
     Style="table-layout: fixed;">
     <ToolBarContent>
-            <MudFileUpload Class="ml-2" T="IReadOnlyList<IBrowserFile>" Accept=".json" FilesChanged="UploadFiles" AppendMultipleFiles="true" MaximumFileCount="25">
-                <ActivatorContent>
+        <MudStack Row AlignItems="AlignItems.Center" Class="w-100">
+
+            <MudStack Row Spacing="2">
+                <MudFileUpload T="IReadOnlyList<IBrowserFile>"
+                               Accept=".json"
+                               FilesChanged="UploadFiles"
+                               AppendMultipleFiles="true"
+                               MaximumFileCount="25">
+                    <ActivatorContent>
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.CloudUpload"
+                                   Style="width:200px">
+                            Load Files
+                        </MudButton>
+                    </ActivatorContent>
+                </MudFileUpload>
+
+                @if (Captures.Any())
+                {
                     <MudButton Variant="Variant.Filled"
-                                Color="Color.Primary"
-                                StartIcon="@Icons.Material.Filled.CloudUpload">
-                        Load Files
+                               Color="Color.Secondary"
+                               OnClick="CopyToClipboard"
+                               Style="width:200px">
+                        Report Performance
                     </MudButton>
-                </ActivatorContent>
-            </MudFileUpload>
+                }
+            </MudStack>
+
             <MudSpacer />
+
             @if (Captures.Any())
             {
-                <MudButton Variant="Variant.Filled"
-                            Color="Color.Secondary"
-                            OnClick="CopyToClipboard">
-                    Report Performance
-                </MudButton>
+                <MudStack Row Spacing="2">
+                    <MudSelect @bind-Value="selectedGame"
+                               Label="Games"
+                               FullWidth="false">
+                        @foreach (var game in games)
+                        {
+                            <MudSelectItem Value="@game">@game</MudSelectItem>
+                        }
+                    </MudSelect>
+
+                    <MudSelect @bind-Value="selectedGameSettings"
+                               Label="Graphic Settigns"
+                               FullWidth="false">
+                        @foreach (var setting in gameSettings)
+                        {
+                            <MudSelectItem Value="@setting">@setting</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudStack>
             }
+
+        </MudStack>
     </ToolBarContent>
     <Columns>
-        <PropertyColumn Property="x => x.Cpu"
-                        Title="CPU"
-                        StickyLeft="true"
-                        HeaderStyle="width: 300px;"
-                        CellStyle="width: 300px;" />
-
-        <PropertyColumn Property="x => x.Gpu"
-                        Title="GPU"
-                        HeaderStyle="width: 300px;"
-                        CellStyle="width: 300px;" />
-
         <PropertyColumn Property="x => x.GameName"
                         Title="Game"
                         HeaderStyle="width: 140px;"
@@ -59,56 +85,41 @@
                         HeaderStyle="width: 100px;"
                         CellStyle="width: 100px;" />
 
-        <PropertyColumn Property="x => x.AverageFramerate"
+        <PropertyColumn Property="x => x.AggregatesRunStats.Average"
                         Title="Avg FPS"
                         Format="F1"
                         HeaderStyle="width: 90px; text-align: right;"
                         CellStyle="width: 90px; text-align: right;" />
 
-        <PropertyColumn Property="x => x.TenPercentLowFramerate"
+        <PropertyColumn Property="x => x.Cpu"
+                        Title="CPU"
+                        HeaderStyle="width: 300px;"
+                        CellStyle="width: 300px;" />
+
+        <PropertyColumn Property="x => x.Gpu"
+                        Title="GPU"
+                        HeaderStyle="width: 300px;"
+                        CellStyle="width: 300px;" />
+
+        <PropertyColumn Property="x => x.AggregatesRunStats.TenPercentLowAverage"
                         Title="10% Low Avg FPS"
                         Format="F1"
                         HeaderStyle="width: 140px; text-align: right;"
                         CellStyle="width: 140px; text-align: right;" />
 
-        <PropertyColumn Property="x => x.OnePercentLowFramerate"
+        <PropertyColumn Property="x => x.AggregatesRunStats.OnePercentLowAverage"
                         Title="1% Low Avg FPS"
                         Format="F1"
                         HeaderStyle="width: 130px; text-align: right;"
                         CellStyle="width: 130px; text-align: right;" />
 
-        <PropertyColumn Property="x => x.ZeroPointOnePercentLowFramerate"
+        <PropertyColumn Property="x => x.AggregatesRunStats.ZeroPointOnePercentLowAverage"
                         Title="0.1% Low Avg FPS"
                         Format="F1"
                         HeaderStyle="width: 140px; text-align: right;"
                         CellStyle="width: 140px; text-align: right;" />
     </Columns>
-</MudDataGrid> *@
-
-<MudContainer Class="d-flex flex-column justify-start align-start" MaxWidth="MaxWidth.ExtraLarge">
-    <MudFileUpload T="IReadOnlyList<IBrowserFile>" Accept=".json" FilesChanged="UploadFiles" AppendMultipleFiles="true" MaximumFileCount="25">
-        <ActivatorContent>
-            <MudButton Class="mb-2"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       StartIcon="@Icons.Material.Filled.CloudUpload"
-                       Style="width:200px">
-                Load Files
-            </MudButton>
-        </ActivatorContent>
-    </MudFileUpload>
-    <MudSpacer />
-    @if (Captures.Any())
-    {
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Secondary"
-                   OnClick="CopyToClipboard"
-                   Style="width:200px">
-            Report Performance
-        </MudButton>
-    }
-
-</MudContainer>
+</MudDataGrid>
 
 @if (Captures.Any())
 {
@@ -147,6 +158,12 @@
     List<decimal> frameTimes = new List<decimal>();
     IList<IBrowserFile> files = new List<IBrowserFile>();
 
+    List<string> games = new List<string>();
+    List<string> gameSettings = new List<string>();
+
+    string selectedGame = string.Empty;
+    string selectedGameSettings = string.Empty;
+
     private async Task UploadFiles(IReadOnlyList<IBrowserFile> files)
     {
         if (Data.Any() && Captures.Any())
@@ -174,38 +191,18 @@
                 Data.Add(result);
         }
 
-        Captures = capFrameReader.GetFileInfoDisplays(Data);
+        Captures = capFrameReader.GetFramerateCaptures(Data);
+
+        games = Captures
+            .Select(x => x.GameName)
+            .Distinct()
+            .ToList();
+
+        gameSettings = Captures
+            .Select(x => x.GameSettings)
+            .Distinct()
+            .ToList();
     }
-
-    // private Stream GetCsvStream(string content)
-    // {
-    //     byte[] bytes = System.Text.Encoding.UTF8.GetBytes(content);
-
-    //     return new MemoryStream(bytes);
-    // }
-
-
-    // private async Task ReportPerformance()
-    // {
-    //     IList<FramerateAggregatedPerformance> aggregatedPerformances = Captures
-    //             .GroupBy(c => $"{c.Cpu}|{c.Gpu}|{c.Memory}")
-    //             .Select(c => new FramerateAggregatedPerformance(c.ToList()))
-    //             .ToList();
-
-    //     string report = new AggregatePerformanceReporter().ReportePerformance(aggregatedPerformances, ",");
-
-    //     var fileName = "performance_report.csv";
-
-    //     Stream fileStream = GetCsvStream(report);
-
-    //     using var streamRef = new DotNetStreamReference(fileStream);
-
-    //     await JS.InvokeVoidAsync(
-    //         "downloadFileFromStream",
-    //         fileName,
-    //         streamRef
-    //     );
-    // }
 
     private async Task CopyToClipboard()
     {

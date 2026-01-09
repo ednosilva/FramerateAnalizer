@@ -1,115 +1,123 @@
-﻿@using FPSAnalizer
-@using Plotly.Blazor
-@using Plotly.Blazor.ConfigLib
-@using Plotly.Blazor.LayoutLib
-@using Plotly.Blazor.Traces
-@using Plotly.Blazor.Traces.BarLib
+﻿@using ApexCharts
+@using FramerateAnalizer
 
-<MudContainer Class="d-flex justify-center align-center" Style="width: 100%">
-    <PlotlyChart style="width:1650px" @bind-Config="config" @bind-Layout="layout" @bind-Data="data" @ref="chart" />
+<MudContainer Class="d-flex justify-center align-center mt-10" Style="width: 100%">
+    <ApexChart TItem="FramerateCapture"
+               Title="Framerate Aggregated Values"
+               Options=options
+               Height="500">
+        
+        <ApexPointSeries TItem="FramerateCapture"
+                         Items="Captures"
+                         Name="FPS Avg"
+                         SeriesType="SeriesType.Bar"
+                         YAggregate="@(e => e.Sum(x => (decimal)x.AggregatesRunStats.Average))"
+                         XValue="@(e => e.Cpu)" />
+
+        <ApexPointSeries TItem="FramerateCapture"
+                         Items="Captures"
+                         Name="FPS 10%"
+                         SeriesType="SeriesType.Bar"
+                         YAggregate="@(e => e.Sum(x => (decimal)x.AggregatesRunStats.TenPercentLowAverage))"
+                         XValue="@(e => e.Cpu)" />
+
+        <ApexPointSeries TItem="FramerateCapture"
+                         Items="Captures"
+                         Name="FPS 1%"
+                         SeriesType="SeriesType.Bar"
+                         YAggregate="@(e => e.Sum(x => (decimal)x.AggregatesRunStats.OnePercentLowAverage))"
+                         XValue="@(e => e.Cpu)" />
+
+        <ApexPointSeries TItem="FramerateCapture"
+                         Items="Captures"
+                         Name="FPS 0.1%"
+                         SeriesType="SeriesType.Bar"
+                         YAggregate="@(e => e.Sum(x => (decimal)x.AggregatesRunStats.ZeroPointOnePercentLowAverage))"
+                         XValue="@(e => e.Cpu)" />
+    </ApexChart>
 </MudContainer>
 
 @code {
     [Parameter] public List<FramerateCapture> Captures { get; set; }
 
-    private PlotlyChart chart;
-    private Config config;
-    private Layout layout;
-    private IList<ITrace> data;
+    private ApexChartOptions<FramerateCapture> options;
 
     protected override void OnInitialized()
     {
-        config = new Config
+        options = new ApexChartOptions<FramerateCapture>
         {
-            Responsive = true,
-            Editable = false,
-            DisplayModeBar = DisplayModeBarEnum.False
-        };
-
-        layout = new Layout
-        {
-            Title = new Title
+            Chart = new Chart
             {
-                Text = GetType().Name
+                Stacked = true,
+                StackType = StackType.Normal,
+                Toolbar = new Toolbar
+                {
+                    Show = false
+                },
+                Width = "1400px",
             },
-            BarMode = BarModeEnum.Stack,
-            Margin = new Plotly.Blazor.LayoutLib.Margin
+            PlotOptions = new PlotOptions
             {
-                L = 200,
-                R = 40,
-                T = 40,
-                B = 40
-            }
+                Bar = new PlotOptionsBar
+                {
+                    Horizontal = true,
+                    BarHeight = "15%"
+                }
+            },
+            Theme = new Theme { Mode = Mode.Light, Palette = PaletteType.Palette8 },
+
+            Xaxis = new XAxis
+            {
+                Title = new AxisTitle
+                {
+                    Text = "FPS",
+                    Style = new AxisTitleStyle
+                    {
+                        FontSize = "14px"
+                    }
+                },
+                Labels = new XAxisLabels
+                {
+                    Style = new AxisLabelStyle
+                    {
+                        FontSize = "14px"
+                    }
+                }
+            },
+            Yaxis = new List<YAxis> { 
+                new YAxis
+                {
+                    Title = new AxisTitle
+                    {
+                        Text = "CPU",
+                        Style = new AxisTitleStyle {
+                            FontSize = "14px"
+                        }
+                    },
+                    Labels = new YAxisLabels {
+                        MaxWidth = 260,
+                        Style = new AxisLabelStyle {
+                            FontSize = "14px"
+                        } 
+                    }
+                }
+            },
+            Legend = new Legend
+            {
+                Position = LegendPosition.Right
+            },
+            DataLabels = new DataLabels
+            {
+                Formatter = "function (val) { return val.toFixed(1); }"
+            },
+            Colors = new List<string> { "#1f77b4", "#2ca02c", "#ff7f0e", "#ff4d00" }
         };
 
-        data = CreateChartData();
-
-        base.OnInitialized();
-    }
-
-    private List<ITrace> CreateChartData()
-    {
-        List<ITrace> Data = new List<ITrace>();
-
-        var capturesByCpu = Captures
-            .GroupBy(c => new { c.Cpu })
+        Captures = Captures
+            .GroupBy(c => c.Cpu)
+            .SelectMany(c => c)
             .ToList();
 
-        foreach (var cpuGroup in capturesByCpu)
-        {
-            var cpuCaptures = Captures.Where(x => x.Cpu == cpuGroup.Key.Cpu).ToList();
-
-            FramerateAggregatedPerformance framerateAggregatedPerformance = new FramerateAggregatedPerformance(cpuCaptures);
-
-            Data.Add(new Bar
-            {
-                Name = $"FPS 0.1% - {cpuGroup.Key.Cpu}",
-                X = new List<object> { cpuGroup.Average(x => x.ZeroPointOnePercentLowFramerate) },
-                Y = new List<object> { cpuGroup.Key.Cpu },
-                Orientation = OrientationEnum.H,
-                Marker = new Marker { Color = "#ff4d00" },
-                Text = $"{cpuGroup.Average(x => x.ZeroPointOnePercentLowFramerate).ToString("F1")}",
-                TextPosition = TextPositionEnum.Inside,
-                Width = 0.1m
-            });
-
-            Data.Add(new Bar
-            {
-                Name = $"FPS 1% - {cpuGroup.Key.Cpu}",
-                X = new List<object> { cpuGroup.Average(x => x.OnePercentLowFramerate) },
-                Y = new List<object> { cpuGroup.Key.Cpu },
-                Orientation = OrientationEnum.H,
-                Marker = new Marker { Color = "#ff7f0e" },
-                Text = $"{cpuGroup.Average(x => x.OnePercentLowFramerate).ToString("F1")}",
-                TextPosition = TextPositionEnum.Inside,
-                Width = 0.1m
-            });
-
-            Data.Add(new Bar
-            {
-                Name = $"FPS 10% - {cpuGroup.Key.Cpu}",
-                X = new List<object> { cpuGroup.Average(x => x.TenPercentLowFramerate) },
-                Y = new List<object> { cpuGroup.Key.Cpu },
-                Orientation = OrientationEnum.H,
-                Marker = new Marker { Color = "#2ca02c" },
-                Text = $"{cpuGroup.Average(x => x.TenPercentLowFramerate).ToString("F1")}",
-                TextPosition = TextPositionEnum.Inside,
-                Width = 0.1m
-            });
-
-            Data.Add(new Bar
-            {
-                Name = $"FPS Avg - {cpuGroup.Key.Cpu}",
-                X = new List<object> { framerateAggregatedPerformance.FramerateGeomeanStats.AggregatedPerformance() },
-                Y = new List<object> { cpuGroup.Key.Cpu },
-                Orientation = OrientationEnum.H,
-                Marker = new Marker { Color = "#1f77b4" },
-                Text = $"{framerateAggregatedPerformance.FramerateGeomeanStats.AggregatedPerformance().ToString("F1")}",
-                TextPosition = TextPositionEnum.Inside,
-                Width = 0.1m
-            });
-        }
-
-        return Data;
+        base.OnInitialized();
     }
 }
