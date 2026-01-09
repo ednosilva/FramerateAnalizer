@@ -20,7 +20,7 @@ namespace FPSAnalizer
         public string FilePath { get; set; }
         
         [JsonIgnore]
-        public string FileName => System.IO.Path.GetFileName(FilePath);
+        public string FileName { get; set; }
     }
 
     public class CaptureInfo

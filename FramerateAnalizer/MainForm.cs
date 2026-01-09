@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -63,9 +64,9 @@ namespace FPSAnalizer
 
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             btnSelecFolder = new Button();
             btnLoadFiles = new Button();
             lblSelectedPath = new Label();
@@ -220,7 +221,7 @@ namespace FPSAnalizer
             lblSystemInfo.Dock = DockStyle.Fill;
             lblSystemInfo.Location = new Point(3, 3);
             lblSystemInfo.Name = "lblSystemInfo";
-            lblSystemInfo.Size = new Size(236, 15);
+            lblSystemInfo.Size = new Size(235, 15);
             lblSystemInfo.TabIndex = 1;
             lblSystemInfo.Text = "Informações do sistema serão exibidas aqui";
             // 
@@ -258,21 +259,22 @@ namespace FPSAnalizer
             // 
             // chartFrameTimes
             // 
-            chartArea2.Name = "ChartArea1";
-            chartFrameTimes.ChartAreas.Add(chartArea2);
+            chartArea1.Name = "ChartArea1";
+            chartFrameTimes.ChartAreas.Add(chartArea1);
             chartFrameTimes.Dock = DockStyle.Fill;
-            legend2.Name = "Legend1";
-            chartFrameTimes.Legends.Add(legend2);
+            legend1.Name = "Legend1";
+            chartFrameTimes.Legends.Add(legend1);
             chartFrameTimes.Location = new Point(3, 3);
             chartFrameTimes.Name = "chartFrameTimes";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series2.Color = Color.RoyalBlue;
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            chartFrameTimes.Series.Add(series2);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series1.Color = Color.RoyalBlue;
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            chartFrameTimes.Series.Add(series1);
             chartFrameTimes.Size = new Size(1410, 266);
             chartFrameTimes.TabIndex = 0;
+            chartFrameTimes.Click += chartFrameTimes_Click;
             // 
             // MainForm
             // 
@@ -341,7 +343,9 @@ namespace FPSAnalizer
                 });
 
                 // Carregar arquivos de forma assíncrona
-                loadedData = await reader.ReadDirectoryAsync(lblSelectedPath.Text, progress);
+                //loadedData = await reader.ReadDirectoryAsync("sdasa", progress);
+
+                var loadedData = new List<CapFrameXData>();
 
                 if (loadedData.Count == 0)
                 {
@@ -513,10 +517,34 @@ namespace FPSAnalizer
                 .Select(c => new FramerateAggregatedPerformance(c.ToList()))
                 .ToList();
 
-            string report = new AggregatePerformanceReporter().ReportePerformance(aggregatedPerformances);
+            string report = new AggregatePerformanceReporter().ReportePerformance(aggregatedPerformances, "\t");
 
             if (MessageBox.Show("Copy to Clipboard?", "Success", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 Clipboard.SetText(report);
+        }
+
+        private void chartFrameTimes_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        public Stream GeneratePerformanceCsv()
+        {
+            IList<FramerateAggregatedPerformance> aggregatedPerformances = framerateCaptures
+                .GroupBy(c => $"{c.Cpu}|{c.Gpu}|{c.Memory}")
+                .Select(c => new FramerateAggregatedPerformance(c.ToList()))
+                .ToList();
+
+            string report = new AggregatePerformanceReporter().ReportePerformance(aggregatedPerformances, ",");
+
+            var file = "performance_report.csv";
+
+            using (var stream = File.CreateText(file))
+            {
+                stream.Write(report);
+
+                return stream.BaseStream;
+            }
         }
     }
 }

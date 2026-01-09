@@ -7,7 +7,7 @@ namespace FPSAnalizer
 {
     public class AggregatePerformanceReporter
     {
-        public string ReportePerformance(IList<FramerateAggregatedPerformance> frameratePerformances)
+        public string ReportePerformance(IList<FramerateAggregatedPerformance> frameratePerformances, string delimiter)
         {
             frameratePerformances = frameratePerformances
                 .OrderBy(p => p.FramerateGeomeanStats.AggregatedPerformance())
@@ -15,8 +15,6 @@ namespace FPSAnalizer
 
             Func<FramerateAggregatedPerformance, string> modelSelector =
                 frameratePerformances.DistinctBy(c => c.Cpu).Count() > 1 ? c => c.Cpu : c => c.Gpu;
-
-            string delimiter = "\t";
 
             var resultRows = new List<string>();
 
