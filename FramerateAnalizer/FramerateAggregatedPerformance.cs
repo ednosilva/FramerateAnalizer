@@ -29,11 +29,7 @@ public class FramerateAggregatedPerformance
         Memory = firstCapture.Cpu;
         FramerateCaptures = framerateCaptures;
 
-        FramerateGeomeanStats = new FrameratePerformanceStats(
-            Statistics.GeometricMean(framerateCaptures.Select(c => c.AverageFramerate).ToList()),
-            Statistics.GeometricMean(framerateCaptures.Select(c => c.TenPercentLowFramerate).ToList()),
-            Statistics.GeometricMean(framerateCaptures.Select(c => c.OnePercentLowFramerate).ToList()),
-            Statistics.GeometricMean(framerateCaptures.Select(c => c.ZeroPointOnePercentLowFramerate).ToList()));
+        FramerateGeomeanStats = new FrameratePerformanceStats(framerateCaptures);
     }
 
     public FrameratePerformanceStats RelativePerformance(FramerateAggregatedPerformance performanceReference)
@@ -41,15 +37,7 @@ public class FramerateAggregatedPerformance
         if (performanceReference == null)
             throw new ArgumentNullException(nameof(performanceReference));
 
-        return new FrameratePerformanceStats(
-            FramerateGeomeanStats.Average /
-                performanceReference.FramerateGeomeanStats.Average * 100.0,
-            FramerateGeomeanStats.TenPercentLowAverage /
-                performanceReference.FramerateGeomeanStats.TenPercentLowAverage * 100.0,
-            FramerateGeomeanStats.OnePercentLowAverage /
-                performanceReference.FramerateGeomeanStats.OnePercentLowAverage * 100.0,
-            FramerateGeomeanStats.ZeroPointOnePercentLowAverage /
-                performanceReference.FramerateGeomeanStats.ZeroPointOnePercentLowAverage * 100.0);
+        return new FrameratePerformanceStats(FramerateGeomeanStats, performanceReference.FramerateGeomeanStats);
     }
 
     public string Cpu { get; set; }

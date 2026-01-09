@@ -110,7 +110,7 @@ namespace FramerateAnalizer
                         if (data != null)
                         {
                             allData.Add(data);
-                            progress?.Report($"✓ {Path.GetFileName(file)} - {data.Info?.GameName ?? "Desconhecido"}");
+                            progress?.Report($"✓ {Path.GetFileName(file)} - {data.Info?.GameName ?? "Unknown"}");
                         }
                     }
                     catch (Exception ex)
@@ -138,51 +138,30 @@ namespace FramerateAnalizer
             return depth == 0 ? directoryName : $"{new string(' ', depth * 2)}└─ {directoryName}";
         }
         
-        /// <summary>
-        /// Lê arquivos em paralelo (mais rápido para muitos arquivos)
-        /// </summary>
         public async Task<List<CapFrameXData>> ReadDirectoryAsync(string directoryPath,
             IProgress<string> progress = null)
         {
             return await Task.Run(() => ReadDirectory(directoryPath, progress));
         }
         
-        /// <summary>
-        /// Converte dados para exibição na lista
-        /// </summary>
-        public List<FramerateCapture> GetFileInfoDisplays(List<CapFrameXData> capFrameXData)
+        public List<FramerateCapture> GetFramerateCaptures(List<CapFrameXData> capFrameXData)
         {
-            var displays = new List<FramerateCapture>();
+            var captures = new List<FramerateCapture>();
             
-            foreach (var data in capFrameXData)
+            foreach (CapFrameXData data in capFrameXData)
             {
-                var capture = new FramerateCapture
-                {
-                    FileName = data.FileName,
-                    GameName = data.Info?.GameName ?? "Desconhecido",
-                    Cpu = data.Info?.Processor ?? "Desconhecido",
-                    Gpu = data.Info?.GPU ?? "Desconhecido",
-                    GameSettings = data.Info?.Comment ?? "Desconhecido",
-                    CaptureDate = data.Info?.CreationDate ?? DateTime.MinValue,
-                    RunCount = data.Runs?.Count ?? 0,
-                    AverageFramerate = data.Runs?.FirstOrDefault()?.CaptureData?.AverageFps ?? 0,
-                    FilePath = data.FilePath
-                };
+                IList<RunFrameCapture>? runFrameCaptures = data.Runs == null ? [] :
+                    data.Runs.Select(r => new RunFrameCapture(r.CaptureData.TimeInSeconds)).ToList();
+
+                var capture = new FramerateCapture(data.FilePath, data.Info?.Processor ?? "Unknown",
+                    data.Info?.GPU ?? "Unknown", data.Info?.SystemRam ?? "Unknown", data.Info?.GameName ?? "Unknown",
+                    data.Info?.Comment ?? "Unknown", data.Info?.CreationDate ?? DateTime.MinValue,
+                    runFrameCaptures);
                 
-                // Adicionar as novas métricas se disponíveis
-                var firstRun = data.Runs?.FirstOrDefault();
-                if (firstRun?.Statistics != null)
-                {
-                    var stats = firstRun.Statistics;
-                    capture.TenPercentLowFramerate = stats.TenPercentLowFramerate;
-                    capture.OnePercentLowFramerate = stats.OnePercentLowFramerate;
-                    capture.ZeroPointOnePercentLowFramerate = stats.ZeroPointOnePercentLowFramerate;
-                }
-                
-                displays.Add(capture);
+                captures.Add(capture);
             }
             
-            return displays;
+            return captures;
         }
     }
 }

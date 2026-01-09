@@ -11,6 +11,8 @@ namespace FramerateAnalizer
     {
         private CapFrameXReader reader;
         private List<CapFrameXData> loadedData;
+        private List<FramerateCapture> captures;
+
         private Button btnSelecFolder;
         private Button btnLoadFiles;
         private Label lblSelectedPath;
@@ -352,7 +354,7 @@ namespace FramerateAnalizer
                 else
                 {
                     // Preparar dados para exibição
-                    List<FramerateCapture> captures = reader.GetFileInfoDisplays(loadedData);
+                    captures = reader.GetFramerateCaptures(loadedData);
                     framerateCaptures = new BindingList<FramerateCapture>(captures);
 
                     // Atualizar DataGridView
@@ -364,10 +366,10 @@ namespace FramerateAnalizer
                             capture.Gpu,
                             capture.GameName,
                             capture.GameSettings,
-                            capture.AverageFramerate.ToString("N1"),
-                            capture.TenPercentLowFramerate.ToString("N1"),
-                            capture.OnePercentLowFramerate.ToString("N1"),
-                            capture.ZeroPointOnePercentLowFramerate.ToString("N1")
+                            capture.AggregatesRunStats.Average.ToString("N1"),
+                            capture.AggregatesRunStats.TenPercentLowAverage.ToString("N1"),
+                            capture.AggregatesRunStats.OnePercentLowAverage.ToString("N1"),
+                            capture.AggregatesRunStats.ZeroPointOnePercentLowAverage.ToString("N1")
                         );
                     }
 
@@ -377,7 +379,7 @@ namespace FramerateAnalizer
                     if (dgvFiles.Rows.Count > 0)
                     {
                         dgvFiles.Rows[0].Selected = true;
-                        UpdateDetails(loadedData[0]);
+                        UpdateDetails(loadedData[0], captures.First());
                     }
                 }
             }
@@ -401,49 +403,38 @@ namespace FramerateAnalizer
                 int selectedIndex = dgvFiles.SelectedRows[0].Index;
                 if (selectedIndex < loadedData.Count)
                 {
-                    UpdateDetails(loadedData[selectedIndex]);
+                    UpdateDetails(loadedData[selectedIndex], captures[selectedIndex]);
                 }
             }
         }
 
-        private void UpdateDetails(CapFrameXData data)
+        private void UpdateDetails(CapFrameXData data, FramerateCapture capture)
         {
             if (data == null)
                 return;
 
             UpdateSystemInfo(data);
-            UpdateStatistics(data);
-            UpdateFrameTimesChart(data);
+            UpdateStatistics(capture);
+            UpdateFrameTimesChart(capture);
         }
 
-        private void UpdateStatistics(CapFrameXData data)
+        private void UpdateStatistics(FramerateCapture capture)
         {
             var statsText = new System.Text.StringBuilder();
             statsText.AppendLine($"=== ESTATÍSTICAS DO ARQUIVO ===\n");
-            statsText.AppendLine($"Arquivo: {data.FileName}");
-            statsText.AppendLine($"Jogo: {data.Info?.GameName ?? "Desconhecido"}");
-            statsText.AppendLine($"Data da Captura: {data.Info?.CreationDate:dd/MM/yyyy HH:mm:ss}");
-            statsText.AppendLine($"Número de Runs: {data.Runs?.Count ?? 0}\n");
+            statsText.AppendLine($"Arquivo: {capture.FileName}");
+            statsText.AppendLine($"Jogo: {capture.GameName}");
+            statsText.AppendLine($"Número de Runs: {capture.RunStats.Count}\n");
 
-            if (data.Runs != null && data.Runs.Count > 0)
+            for (int i = 0; i < capture.RunStats.Count; i++)
             {
-                for (int i = 0; i < data.Runs.Count; i++)
-                {
-                    var run = data.Runs[i];
-                    if (run.CaptureData != null && run.CaptureData.TimeInSeconds?.Count > 0)
-                    {
-                        var stat = run.Statistics;
-                        statsText.AppendLine($"--- Run {i + 1} ---");
-                        statsText.AppendLine($"Hash: {stat.Hash.Substring(0, Math.Min(16, stat.Hash.Length))}...");
-                        statsText.AppendLine($"Frames: {stat.FrameCount}");
-                        statsText.AppendLine($"Duração: {stat.Duration:F2} segundos");
-                        statsText.AppendLine($"FPS Médio: {stat.AverageFps:F2}");
-                        statsText.AppendLine($"10% Low: {stat.TenPercentLowFramerate:F2} FPS");
-                        statsText.AppendLine($"1% Low: {stat.OnePercentLowFramerate:F2} FPS");
-                        statsText.AppendLine($"0.1% Low: {stat.ZeroPointOnePercentLowFramerate:F2} FPS");
-                        statsText.AppendLine();
-                    }
-                }
+                var run = capture.RunStats[i];
+                statsText.AppendLine($"--- Run {i + 1} ---");
+                statsText.AppendLine($"FPS Médio: {run.Average:N1}");
+                statsText.AppendLine($"10% Low: {run.TenPercentLowAverage:N1} FPS");
+                statsText.AppendLine($"1% Low: {run.OnePercentLowAverage:N1} FPS");
+                statsText.AppendLine($"0.1% Low: {run.ZeroPointOnePercentLowAverage:N1} FPS");
+                statsText.AppendLine();
             }
 
             lblStats.Text = statsText.ToString();
@@ -456,7 +447,7 @@ namespace FramerateAnalizer
 
             if (data.Info != null)
             {
-                sysText.AppendLine($"Processador: {data.Info.Processor}");
+                sysText.AppendLine($"CPU: {data.Info.Processor}");
                 sysText.AppendLine($"GPU: {data.Info.GPU}");
                 sysText.AppendLine($"RAM: {data.Info.SystemRam}");
                 sysText.AppendLine($"Placa-mãe: {data.Info.Motherboard}");
@@ -474,17 +465,16 @@ namespace FramerateAnalizer
             lblSystemInfo.Text = sysText.ToString();
         }
 
-        private void UpdateFrameTimesChart(CapFrameXData data)
+        private void UpdateFrameTimesChart(FramerateCapture capture)
         {
-            if (data.Runs == null || data.Runs.Count == 0 ||
-                data.Runs[0].CaptureData?.FrameTimes == null)
+            if (!capture.RunStats.Any())
             {
                 chartFrameTimes.Series[0].Points.Clear();
                 return;
             }
 
-            var run = data.Runs[0];
-            var frameTimes = run.CaptureData.FrameTimes;
+            var run = capture.Runs[0];
+            var frameTimes = run.FrameTimes;
 
             chartFrameTimes.Series[0].Points.Clear();
             chartFrameTimes.ChartAreas[0].AxisX.Title = "Frame";
@@ -497,7 +487,7 @@ namespace FramerateAnalizer
             }
 
             chartFrameTimes.Titles.Clear();
-            chartFrameTimes.Titles.Add($"Frame Times - {data.FileName}");
+            chartFrameTimes.Titles.Add($"Frame Times - {capture.FileName}");
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)

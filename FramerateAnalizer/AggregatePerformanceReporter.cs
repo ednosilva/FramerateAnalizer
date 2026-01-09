@@ -62,10 +62,10 @@ namespace FramerateAnalizer
                         header += $"{gameContext} 0.1% Low Avg{delimiter}";
                     }
 
-                    row += $"{capture.AverageFramerate:N1}{delimiter}";
-                    row += $"{capture.TenPercentLowFramerate:N1}{delimiter}";
-                    row += $"{capture.OnePercentLowFramerate:N1}{delimiter}";
-                    row += $"{capture.ZeroPointOnePercentLowFramerate:N1}{delimiter}";
+                    row += $"{capture.AggregatesRunStats.Average:N1}{delimiter}";
+                    row += $"{capture.AggregatesRunStats.TenPercentLowAverage:N1}{delimiter}";
+                    row += $"{capture.AggregatesRunStats.OnePercentLowAverage:N1}{delimiter}";
+                    row += $"{capture.AggregatesRunStats.ZeroPointOnePercentLowAverage:N1}{delimiter}";
                 }
 
                 firstModel = false;

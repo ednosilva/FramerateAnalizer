@@ -1,45 +1,58 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace FramerateAnalizer;
 
 public class FramerateCapture
 {
-    public string FilePath { get; set; }
+    public FramerateCapture(string filePath, string cpu, string gpu, string memory, string gameName,
+        string gameSettings, DateTime captureDate, IList<RunFrameCapture> runs)
+    {
+        ArgumentNullException.ThrowIfNull(runs, nameof(runs));
 
-    public string FileName { get; set; }
+        FilePath = filePath;
+        Cpu = cpu;
+        Gpu = gpu;
+        Memory = memory;
+        GameName = gameName;
+        GameSettings = gameSettings;
+        CaptureDate = captureDate;
+        Runs = runs;
+        RunStats = runs.Select(c => new FrameratePerformanceStats(c)).ToList();
+        AggregatesRunStats = new FrameratePerformanceStats(RunStats);
+    }
 
-    public string FullFileName { get { return Path.Combine(FilePath, FileName); } }
+    public string FilePath { get; }
 
-    public string Cpu { get; set; }
+    public string Cpu { get; }
 
-    public string Gpu { get; set; }
+    public string Gpu { get; }
 
-    public string Memory { get; set; }
+    public string Memory { get; }
 
-    public string GameName { get; set; }
+    public string GameName { get; }
 
-    public string GameSettings { get; set; }
+    public string GameSettings { get; }
 
-    public DateTime CaptureDate { get; set; }
+    public DateTime CaptureDate { get; }
 
-    public int RunCount { get; set; }
+    public IList<RunFrameCapture> Runs { get; }
 
-    public double AverageFramerate { get; set; }
+    public IList<FrameratePerformanceStats> RunStats { get; }
 
-    public double TenPercentLowFramerate { get; set; }
+    public FrameratePerformanceStats AggregatesRunStats { get; }
 
-    public double OnePercentLowFramerate { get; set; }
-
-    public double ZeroPointOnePercentLowFramerate { get; set; }
+    public string FileName { get { return Path.GetFileName(FilePath); } }
 
     public override bool Equals(object? obj)
     {
-        return obj is FramerateCapture other && FullFileName == other.FullFileName;
+        return obj is FramerateCapture other && FilePath == other.FilePath;
     }
 
     public override int GetHashCode()
     {
-        return FullFileName.GetHashCode();
+        return FilePath.GetHashCode();
     }
 }
