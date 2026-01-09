@@ -1,9 +1,8 @@
-using MathNet.Numerics.Statistics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FPSAnalizer;
+namespace FramerateAnalizer;
 
 public class FramerateAggregatedPerformance
 {
@@ -30,16 +29,7 @@ public class FramerateAggregatedPerformance
         Memory = firstCapture.Cpu;
         FramerateCaptures = framerateCaptures;
 
-        FramerateGeomeanStats = new FrameratePerformanceStats(
-            GeometricMean(framerateCaptures.Select(c => c.AverageFramerate)),
-            GeometricMean(framerateCaptures.Select(c => c.TenPercentLowFramerate)),
-            GeometricMean(framerateCaptures.Select(c => c.OnePercentLowFramerate)),
-            GeometricMean(framerateCaptures.Select(c => c.ZeroPointOnePercentLowFramerate)));
-    }
-
-    private decimal GeometricMean(IEnumerable<decimal> values)
-    {
-        return (decimal)Statistics.GeometricMean(values.Select(v => (double)v));
+        FramerateGeomeanStats = new FrameratePerformanceStats(framerateCaptures);
     }
 
     public FrameratePerformanceStats RelativePerformance(FramerateAggregatedPerformance performanceReference)
@@ -47,15 +37,7 @@ public class FramerateAggregatedPerformance
         if (performanceReference == null)
             throw new ArgumentNullException(nameof(performanceReference));
 
-        return new FrameratePerformanceStats(
-            FramerateGeomeanStats.Average /
-                performanceReference.FramerateGeomeanStats.Average * 100m,
-            FramerateGeomeanStats.TenPercentLowAverage /
-                performanceReference.FramerateGeomeanStats.TenPercentLowAverage * 100m,
-            FramerateGeomeanStats.OnePercentLowAverage /
-                performanceReference.FramerateGeomeanStats.OnePercentLowAverage * 100m,
-            FramerateGeomeanStats.ZeroPointOnePercentLowAverage /
-                performanceReference.FramerateGeomeanStats.ZeroPointOnePercentLowAverage * 100m);
+        return new FrameratePerformanceStats(FramerateGeomeanStats, performanceReference.FramerateGeomeanStats);
     }
 
     public string Cpu { get; set; }
