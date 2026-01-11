@@ -1,17 +1,15 @@
 ﻿@using ApexCharts
 @using FramerateAnalizer
 
-<MudContainer Class="d-flex justify-center align-center mt-10" Style="width: 100%">
-    <ApexChart TItem="FramerateCaptureGroup" Title="Aggregated Framerate (Weighted GeoMean)" Options=options>
-        <ApexPointSeries TItem="FramerateCaptureGroup"
-                         Items="CaptureGroups"
-                         Name="Aggregated Framerate"                        
-                         SeriesType="SeriesType.Bar"
-                         XValue="@(e => e.BenchmarkedParts)"
-                         YAggregate="@(e => (decimal)e.Sum(g => g.Stats.AggregatedFramerate()))"
-                         ShowDataLabels />
-    </ApexChart>
-</MudContainer>
+<ApexChart TItem="FramerateCaptureGroup" Title="Aggregated Framerate (Weighted GeoMean)" Options=options>
+    <ApexPointSeries TItem="FramerateCaptureGroup"
+                        Items="CaptureGroups"
+                        Name="Aggregated Framerate"                        
+                        SeriesType="SeriesType.Bar"
+                        XValue="@(e => e.BenchmarkedParts)"
+                        YAggregate="@(e => (decimal)e.Sum(g => g.Stats.AggregatedFramerate()))"
+                        ShowDataLabels />
+</ApexChart>
 
 @code {
     [Parameter]
@@ -31,7 +29,7 @@
                 {
                     Show = false
                 },
-                Width = 800
+                Height = CaptureGroups.Count * 80 + 100
             },
             PlotOptions = new PlotOptions
             {
@@ -45,8 +43,7 @@
                     }
                 }
             },
-            Theme = new Theme { Mode = Mode.Light, Palette = PaletteType.Palette8 },
-
+            //Theme = new Theme { Mode = Mode.Light, Palette = PaletteType.Palette8 },
             Xaxis = new XAxis
             {
                 Labels = new XAxisLabels
@@ -54,15 +51,17 @@
                     Style = new AxisLabelStyle
                     {
                         FontSize = "0.875rem",
-                        FontWeight = 500
-                    }
-                }
+                        FontWeight = 500,
+                    },
+                    Show = false
+                },
+                Categories = CaptureGroups.Select(g => g.BenchmarkedParts.Split("-"))
             },
             Yaxis = new List<YAxis> { 
                 new YAxis
                 {
                     Labels = new YAxisLabels {
-                        MaxWidth = 400,
+                        MaxWidth = 320,
                         Style = new AxisLabelStyle {
                             FontSize = "0.875rem",
                             FontWeight = 500
