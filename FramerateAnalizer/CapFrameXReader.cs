@@ -149,10 +149,22 @@ namespace FramerateAnalizer
                 IList<FrameCaptureRun>? runFrameCaptures = data.Runs == null ? [] :
                     data.Runs.Select(r => new FrameCaptureRun(r.CaptureData.TimeInSeconds)).ToList();
 
-                var capture = new FramerateCapture(data.FileName, data.Info?.Processor ?? "Unknown",
-                    data.Info?.GPU ?? "Unknown", data.Info?.SystemRam ?? "Unknown", data.Info?.GameName ?? "Unknown",
-                    data.Info?.Comment ?? "Unknown", data.Info?.CreationDate ?? DateTime.MinValue,
-                    runFrameCaptures);
+                string cpu = data.Info?.Processor
+                    .Replace("AMD", string.Empty)
+                    .Replace("Intel", string.Empty)
+                    .Trim() ?? "Unknown";
+
+                string gpu = data.Info?.GPU
+                    .Replace("NVIDIA", string.Empty)
+                    .Replace("NVidia", string.Empty)
+                    .Replace("GeForce", string.Empty)
+                    .Replace("AMD", string.Empty)
+                    .Replace("Radeon", string.Empty)
+                    .Trim() ?? "Unknown";
+
+                var capture = new FramerateCapture(data.FileName, cpu, gpu, data.Info?.SystemRam ?? "Unknown",
+                    data.Info?.GameName ?? "Unknown", data.Info?.Comment ?? "Unknown",
+                    data.Info?.CreationDate ?? DateTime.MinValue, runFrameCaptures);
                 
                 captures.Add(capture);
             }

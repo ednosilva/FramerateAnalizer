@@ -35,10 +35,10 @@ public record FrameCaptureRun
         var sortedFrameTimes = new List<double>(FrameTimes);
         sortedFrameTimes.Sort((a, b) => b.CompareTo(a));
 
-        double average = Math.Round(FrameTimes.Count / duration, 1);
-        double tenPercentLowAverage = Math.Round(GetFramerateLowAverage(sortedFrameTimes, 0.1), 1);
-        double onePercentLowAverage = Math.Round(GetFramerateLowAverage(sortedFrameTimes, 0.01), 1);
-        double zeroPointOnePercentLowAverage = Math.Round(GetFramerateLowAverage(sortedFrameTimes, 0.001), 1);
+        double average = FrameTimes.Count / duration;
+        double tenPercentLowAverage = GetFramerateLowAverage(sortedFrameTimes, 0.1);
+        double onePercentLowAverage = GetFramerateLowAverage(sortedFrameTimes, 0.01);
+        double zeroPointOnePercentLowAverage = GetFramerateLowAverage(sortedFrameTimes, 0.001);
 
         Stats = new FramerateStats(average, tenPercentLowAverage, onePercentLowAverage, zeroPointOnePercentLowAverage);
     }

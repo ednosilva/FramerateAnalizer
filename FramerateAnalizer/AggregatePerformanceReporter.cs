@@ -7,9 +7,9 @@ namespace FramerateAnalizer
 {
     public class AggregatePerformanceReporter
     {
-        public string ReportePerformance(IList<FramerateCaptureGroup> frameratePerformances, string delimiter)
+        public string ReportePerformance(IList<FramerateCaptureGroup> captureGroups, string delimiter)
         {
-            frameratePerformances = frameratePerformances
+            captureGroups = captureGroups
                 .OrderBy(p => p.Stats.AggregatedFramerate())
                 .ToList();
 
@@ -29,23 +29,23 @@ namespace FramerateAnalizer
 
             bool firstModel = true;
 
-            foreach (var modelPerformance in frameratePerformances)
+            foreach (var group in captureGroups)
             {
-                var relativePerformance = modelPerformance.RelativePerformance(frameratePerformances.First());
+                var relativePerformance = group.RelativePerformance(captureGroups.First());
 
-                string row = $"{modelPerformance.BenchmarkedPart}{delimiter}";
+                string row = $"{group.BenchmarkedParts}{delimiter}";
 
-                row += $"{relativePerformance.Average:N1}{delimiter}";
-                row += $"{relativePerformance.TenPercentLowAverage:N1}{delimiter}";
-                row += $"{relativePerformance.OnePercentLowAverage:N1}{delimiter}";
-                row += $"{relativePerformance.ZeroPointOnePercentLowAverage:N1}{delimiter}";
+                row += $"{relativePerformance.Average:N3}{delimiter}";
+                row += $"{relativePerformance.TenPercentLowAverage:N3}{delimiter}";
+                row += $"{relativePerformance.OnePercentLowAverage:N3}{delimiter}";
+                row += $"{relativePerformance.ZeroPointOnePercentLowAverage:N3}{delimiter}";
 
-                row += $"{modelPerformance.Stats.Average:N1}{delimiter}";
-                row += $"{modelPerformance.Stats.TenPercentLowAverage:N1}{delimiter}";
-                row += $"{modelPerformance.Stats.OnePercentLowAverage:N1}{delimiter}";
-                row += $"{modelPerformance.Stats.ZeroPointOnePercentLowAverage:N1}{delimiter}";
+                row += $"{group.Stats.Average:N1}{delimiter}";
+                row += $"{group.Stats.TenPercentLowAverage:N1}{delimiter}";
+                row += $"{group.Stats.OnePercentLowAverage:N1}{delimiter}";
+                row += $"{group.Stats.ZeroPointOnePercentLowAverage:N1}{delimiter}";
 
-                foreach (FramerateCapture capture in modelPerformance.Captures)
+                foreach (FramerateCapture capture in group.Captures)
                 {
                     if (firstModel)
                     {

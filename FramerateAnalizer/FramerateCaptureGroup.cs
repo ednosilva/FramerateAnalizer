@@ -20,14 +20,14 @@ public class FramerateCaptureGroup
             throw new ArgumentOutOfRangeException(nameof(captures));
         }
 
-        BenchmarkedPart = benchmarkedPartSelector(this);
-
         FramerateCapture firstCapture = captures.First();
 
         Cpu = firstCapture.Cpu;
         Gpu = firstCapture.Cpu;
-        Memory = firstCapture.Cpu;
+        Memory = firstCapture.Memory;
         Captures = captures;
+
+        BenchmarkedParts = benchmarkedPartSelector(this);
 
         SetStats(captures);
     }
@@ -67,7 +67,7 @@ public class FramerateCaptureGroup
 
     public string Memory { get; }
 
-    public string BenchmarkedPart { get; }
+    public string BenchmarkedParts { get; }
 
     public IList<FramerateCapture> Captures { get; }
 

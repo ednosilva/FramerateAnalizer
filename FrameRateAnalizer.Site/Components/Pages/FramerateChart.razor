@@ -2,38 +2,39 @@
 @using FramerateAnalizer
 
 <MudContainer Class="d-flex justify-center align-center mt-10" Style="width: 100%">
-    <ApexChart TItem="FramerateCaptureGroup"
-               Title="Framerate Aggregated Values"
-               Options=options
-               Height="500">
+    <ApexChart TItem="FramerateCaptureGroup" Title="Average Framerate (GeoMean)" Options=options>
 
         <ApexPointSeries TItem="FramerateCaptureGroup"
                          Items="CaptureGroups"
-                         Name="0.1 Low Avg FPS%"
+                         Name="Average FPS"
                          SeriesType="SeriesType.Bar"
-                         YAggregate="@(e => (decimal)(e.Sum(g => g.Stats.ZeroPointOnePercentLowAverage)))"
-                         XValue="@(e => e.Cpu)" />
-        
-        <ApexPointSeries TItem="FramerateCaptureGroup"
-                         Items="CaptureGroups"
-                         Name="1% Low Avg FPS"
-                         SeriesType="SeriesType.Bar"
-                         YAggregate="@(e => (decimal)(e.Sum(g => g.Stats.OnePercentLowAverage)))"
-                         XValue="@(e => e.Cpu)" />
+                         YAggregate="@(e => (decimal)(e.Sum(g => g.Stats.Average)))"
+                         XValue="@(e => e.BenchmarkedParts)"
+                         ShowDataLabels />
 
         <ApexPointSeries TItem="FramerateCaptureGroup"
                          Items="CaptureGroups"
                          Name="10% Low Avg FPS"
                          SeriesType="SeriesType.Bar"
                          YAggregate="@(e => (decimal)(e.Sum(g => g.Stats.TenPercentLowAverage)))"
-                         XValue="@(e => e.Cpu)" />
+                         XValue="@(e => e.BenchmarkedParts)"
+                         ShowDataLabels />
+        
+        <ApexPointSeries TItem="FramerateCaptureGroup"
+                         Items="CaptureGroups"
+                         Name="1% Low Avg FPS"
+                         SeriesType="SeriesType.Bar"
+                         YAggregate="@(e => (decimal)(e.Sum(g => g.Stats.OnePercentLowAverage)))"
+                         XValue="@(e => e.BenchmarkedParts)"
+                         ShowDataLabels />
 
         <ApexPointSeries TItem="FramerateCaptureGroup"
                          Items="CaptureGroups"
-                         Name="Avg FPS"
+                         Name="0.1% Low Avg FPS"
                          SeriesType="SeriesType.Bar"
-                         YAggregate="@(e => (decimal)(e.Sum(g => g.Stats.Average)))"
-                         XValue="@(e => e.Cpu)" />
+                         YAggregate="@(e => (decimal)(e.Sum(g => g.Stats.ZeroPointOnePercentLowAverage)))"
+                         XValue="@(e => e.BenchmarkedParts)"
+                         ShowDataLabels />
     </ApexChart>
 </MudContainer>
 
@@ -47,71 +48,69 @@
     {
         options = new ApexChartOptions<FramerateCaptureGroup>
         {
+            // Stroke = new Stroke
+            // {
+            //     Colors = ["transparent"],
+            //     Width = 2
+            // },
             Chart = new Chart
             {
-                Stacked = true,
+                Stacked = false,
                 StackType = StackType.Normal,
                 Toolbar = new Toolbar
                 {
                     Show = false
                 },
-                Width = "1400px",
+                Width = 800,
             },
             PlotOptions = new PlotOptions
             {
                 Bar = new PlotOptionsBar
                 {
                     Horizontal = true,
-                    BarHeight = "20%"
+                    BarHeight = "80%",
+                    //BorderRadius = 2,
+                    DataLabels = new PlotOptionsBarDataLabels
+                    {
+                        Position = BarDataLabelPosition.Top,  
+                    }
                 }
             },
             Theme = new Theme { Mode = Mode.Light, Palette = PaletteType.Palette8 },
-
             Xaxis = new XAxis
             {
-                Title = new AxisTitle
-                {
-                    Text = "Framerate",
-                    Style = new AxisTitleStyle
-                    {
-                        FontSize = "14px"
-                    }
-                },
                 Labels = new XAxisLabels
                 {
                     Style = new AxisLabelStyle
                     {
-                        FontSize = "14px"
+                        FontSize = "0.875rem",
+                        FontWeight = 500
                     }
                 }
             },
             Yaxis = new List<YAxis> { 
                 new YAxis
                 {
-                    Title = new AxisTitle
-                    {
-                        Text = "CPU",
-                        Style = new AxisTitleStyle {
-                            FontSize = "14px"
+                    Labels = new YAxisLabels {
+                        MaxWidth = 400,
+                        Style = new AxisLabelStyle {
+                            FontSize = "0.875rem",
+                            FontWeight = 500
                         }
                     },
-                    Labels = new YAxisLabels {
-                        MaxWidth = 260,
-                        Style = new AxisLabelStyle {
-                            FontSize = "14px"
-                        } 
-                    }
+                    DecimalsInFloat = 1
                 }
             },
             Legend = new Legend
             {
-                Position = LegendPosition.Right
+                Position = LegendPosition.Top
             },
             DataLabels = new DataLabels
             {
-                Formatter = "function (val) { return val.toFixed(1); }"
+                Formatter = "function (val) { return val.toFixed(1); }",
+                OffsetX = -25
             },
-            Colors = new List<string> { "#ff4d00", "#ff7f0e", "#2ca02c", "#1f77b4" }
+            Colors = [Colors.Blue.Darken1, Colors.Blue.Darken2, Colors.Blue.Darken3, Colors.Blue.Darken4]
         };
 
         base.OnInitialized();

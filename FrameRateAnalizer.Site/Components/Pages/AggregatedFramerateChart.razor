@@ -2,12 +2,12 @@
 @using FramerateAnalizer
 
 <MudContainer Class="d-flex justify-center align-center mt-10" Style="width: 100%">
-    <ApexChart TItem="FramerateCaptureGroup" Title="Framerate Aggregated Values" Options=options>
+    <ApexChart TItem="FramerateCaptureGroup" Title="Aggregated Framerate (Weighted GeoMean)" Options=options>
         <ApexPointSeries TItem="FramerateCaptureGroup"
                          Items="CaptureGroups"
                          Name="Aggregated Framerate"                        
                          SeriesType="SeriesType.Bar"
-                         XValue="@(e => e.Cpu)"
+                         XValue="@(e => e.BenchmarkedParts)"
                          YAggregate="@(e => (decimal)e.Sum(g => g.Stats.AggregatedFramerate()))"
                          ShowDataLabels />
     </ApexChart>
@@ -25,70 +25,62 @@
         {
             Chart = new Chart
             {
-                Stacked = true,
+                Stacked = false,
                 StackType = StackType.Normal,
                 Toolbar = new Toolbar
                 {
                     Show = false
                 },
-                Width = "1400px",
+                Width = 800
             },
             PlotOptions = new PlotOptions
             {
                 Bar = new PlotOptionsBar
                 {
                     Horizontal = true,
-                    BarHeight = "30%"
+                    BarHeight = "40%",
+                    DataLabels = new PlotOptionsBarDataLabels
+                    {
+                        Position = BarDataLabelPosition.Top
+                    }
                 }
             },
             Theme = new Theme { Mode = Mode.Light, Palette = PaletteType.Palette8 },
 
             Xaxis = new XAxis
             {
-                Title = new AxisTitle
-                {
-                    Text = "Framerate",
-                    Style = new AxisTitleStyle
-                    {
-                        FontSize = "14px"
-                    }
-                },
                 Labels = new XAxisLabels
                 {
                     Style = new AxisLabelStyle
                     {
-                        FontSize = "14px"
+                        FontSize = "0.875rem",
+                        FontWeight = 500
                     }
                 }
             },
             Yaxis = new List<YAxis> { 
                 new YAxis
                 {
-                    Title = new AxisTitle
-                    {
-                        Text = "CPU",
-                        Style = new AxisTitleStyle {
-                            FontSize = "14px"
-                        }
-                    },
                     Labels = new YAxisLabels {
-                        MaxWidth = 260,
+                        MaxWidth = 400,
                         Style = new AxisLabelStyle {
-                            FontSize = "14px"
+                            FontSize = "0.875rem",
+                            FontWeight = 500
                         } 
-                    }
+                    },
+                    DecimalsInFloat = 1
                 }
             },
             Legend = new Legend
             {
-                Position = LegendPosition.Right
+                Position = LegendPosition.Top
             },
             DataLabels = new DataLabels
             {
                 Formatter = "function (val) { return val.toFixed(1); }",
-                
+                OffsetX = -25
             },
-            Colors = new List<string> { "#1f77b4" }
+            Colors = [Colors.Blue.Darken3]
         };
 
         base.OnInitialized();

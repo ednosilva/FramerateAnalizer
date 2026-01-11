@@ -4,19 +4,15 @@
 @using MudBlazor
 @using System.Text.Json
 @using Plotly.Blazor
+@using System.Globalization
 
 @inject IJSRuntime JS
 @inject ISnackbar Snackbar
 
 <PageTitle>Home</PageTitle>
 
-<MudDataGrid 
-    T="FramerateCapture" 
-    Items="@Captures" 
-    RowClick="@RowClicked"
-    Hover FixedHeader Groupable
-    Height="430px"
-    Style="table-layout: fixed;">
+<MudDataGrid T="FramerateCapture" Items="@Captures" RowClick="@RowClicked" Height="368px" Style="table-layout: fixed;"
+             Dense Hover FixedHeader Groupable>
     <ToolBarContent>
         <MudStack Row AlignItems="AlignItems.Center" Class="w-100">
 
@@ -75,51 +71,28 @@
         </MudStack>
     </ToolBarContent>
     <Columns>
-        <PropertyColumn Property="x => x.GameName"
-                        Title="Game"
-                        />
-
-        <PropertyColumn Property="x => x.GameSettings"
-                        Title="Game Settings"
-                        />
-
-        <PropertyColumn Property="x => x.Gpu"
-                        Title="GPU"
-                        />
-
-        <PropertyColumn Property="x => x.Cpu"
-                        Title="CPU"
-                         />
-
-        <PropertyColumn Property="x => x.Memory"
-                        Title="Memory" />
-
-        <PropertyColumn Property="x => x.Stats.Average"
-                        Title="Avg FPS"
-                        Format="F1"
-                        CellStyle="text-align: right;" />
-
-        <PropertyColumn Property="x => x.Stats.TenPercentLowAverage"
-                        Title="10% Low Avg FPS"
-                        Format="F1"
-                        CellStyle="text-align: right;" />
-
-        <PropertyColumn Property="x => x.Stats.OnePercentLowAverage"
-                        Title="1% Low Avg FPS"
-                        Format="F1"
-                        CellStyle="text-align: right;" />
-
-        <PropertyColumn Property="x => x.Stats.ZeroPointOnePercentLowAverage"
-                        Title="0.1% Low Avg FPS"
-                        Format="F1"
-                        CellStyle="text-align: right;" />
+        <PropertyColumn Property="x => x.GameName" Title="Game" />
+        <PropertyColumn Property="x => x.GameSettings" Title="Game Settings" />
+        <PropertyColumn Property="x => x.Cpu" Title="CPU" />
+        <PropertyColumn Property="x => x.Gpu" Title="GPU" />
+        <PropertyColumn Property="x => x.Memory" Title="Memory" />
+        <PropertyColumn Property="x => x.Stats.Average" Title="Avg FPS" Culture="cultureInfo"
+            Format="F1" CellStyle="text-align: right;" />
+        <PropertyColumn Property="x => x.Stats.TenPercentLowAverage" Title="10% Low Avg FPS"
+            Culture="cultureInfo" Format="F1" CellStyle="text-align: right;" />
+        <PropertyColumn Property="x => x.Stats.OnePercentLowAverage" Title="1% Low Avg FPS"
+            Culture="cultureInfo" Format="F1" CellStyle="text-align: right;" />
+        <PropertyColumn Property="x => x.Stats.ZeroPointOnePercentLowAverage" Title="0.1% Low Avg FPS"
+            Culture="cultureInfo" Format="F1" CellStyle="text-align: right;" />
     </Columns>
 </MudDataGrid>
 
 @if (CaptureGroups.Any())
 {
-    <FramerateChart CaptureGroups="CaptureGroups" />
-    <AggregatedFramerateChart CaptureGroups="CaptureGroups" />
+    <MudStack Row>
+        <FramerateChart CaptureGroups="CaptureGroups" />
+        <AggregatedFramerateChart CaptureGroups="CaptureGroups" />
+    </MudStack>
 }
 
 <script>
@@ -143,21 +116,23 @@
 </script>
 
 @code {
-    public IList<CapFrameXData> Data { get; set; } = new List<CapFrameXData>();
+    CultureInfo cultureInfo = CultureInfo.InvariantCulture;
 
-    IList<FramerateCapture> Captures = new List<FramerateCapture>();
+    public IList<CapFrameXData> Data { get; set; } = [];
 
-    IList<FramerateCaptureGroup> CaptureGroups = new List<FramerateCaptureGroup>();
+    IList<FramerateCapture> Captures = [];
 
-    IList<ChartSeries> selectedFrameTime;
+    IList<FramerateCaptureGroup> CaptureGroups = [];
+
+    //IList<ChartSeries> selectedFrameTime;
 
     //CapFrameXData selectedRow = new CapFrameXData();
 
-    List<decimal> frameTimes = new List<decimal>();
+    //List<decimal> frameTimes = new List<decimal>();
     IList<IBrowserFile> files = new List<IBrowserFile>();
 
-    List<string> games = new List<string>();
-    List<string> gameSettings = new List<string>();
+    List<string> games = [];
+    List<string> gameSettings = [];
 
     string selectedGame = string.Empty;
     string selectedGameSettings = string.Empty;
@@ -205,7 +180,7 @@
 
     private async Task CopyToClipboard()
     {
-        string report = new AggregatePerformanceReporter().ReportePerformance(CaptureGroups, ",");
+        string report = new AggregatePerformanceReporter().ReportePerformance(CaptureGroups, ";");
 
         await JS.InvokeVoidAsync("navigator.clipboard.writeText", report);
         Snackbar.Add("Copied!", Severity.Success);
