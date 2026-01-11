@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace FramerateAnalizer
 {
@@ -12,9 +11,7 @@ namespace FramerateAnalizer
         
         public List<CaptureRun> Runs { get; set; }
         
-        public string FilePath { get; set; }
-        
-        public string FileName => Path.GetFileName(FilePath);
+        public string FileName { get; set; }
     }
 
     public class CaptureInfo

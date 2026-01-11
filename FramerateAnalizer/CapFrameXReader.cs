@@ -33,7 +33,7 @@ namespace FramerateAnalizer
 
                 CapFrameXData data = await JsonSerializer.DeserializeAsync<CapFrameXData>(stream, jsonOptions);
 
-                data.FilePath = fileName;
+                data.FileName = fileName;
 
                 return data;
             }
@@ -140,16 +140,16 @@ namespace FramerateAnalizer
         //    return await Task.Run(() => ReadDirectory(directoryPath, progress));
         //}
         
-        public List<FramerateCapture> GetFramerateCaptures(List<CapFrameXData> capFrameXData)
+        public List<FramerateCapture> GetFramerateCaptures(IList<CapFrameXData> capFrameXData)
         {
             var captures = new List<FramerateCapture>();
             
             foreach (CapFrameXData data in capFrameXData)
             {
-                IList<RunFrameCapture>? runFrameCaptures = data.Runs == null ? [] :
-                    data.Runs.Select(r => new RunFrameCapture(r.CaptureData.TimeInSeconds)).ToList();
+                IList<FrameCaptureRun>? runFrameCaptures = data.Runs == null ? [] :
+                    data.Runs.Select(r => new FrameCaptureRun(r.CaptureData.TimeInSeconds)).ToList();
 
-                var capture = new FramerateCapture(data.FilePath, data.Info?.Processor ?? "Unknown",
+                var capture = new FramerateCapture(data.FileName, data.Info?.Processor ?? "Unknown",
                     data.Info?.GPU ?? "Unknown", data.Info?.SystemRam ?? "Unknown", data.Info?.GameName ?? "Unknown",
                     data.Info?.Comment ?? "Unknown", data.Info?.CreationDate ?? DateTime.MinValue,
                     runFrameCaptures);

@@ -2,49 +2,50 @@
 @using FramerateAnalizer
 
 <MudContainer Class="d-flex justify-center align-center mt-10" Style="width: 100%">
-    <ApexChart TItem="FramerateCapture"
+    <ApexChart TItem="FramerateCaptureGroup"
                Title="Framerate Aggregated Values"
                Options=options
                Height="500">
+
+        <ApexPointSeries TItem="FramerateCaptureGroup"
+                         Items="CaptureGroups"
+                         Name="0.1 Low Avg FPS%"
+                         SeriesType="SeriesType.Bar"
+                         YAggregate="@(e => (decimal)(e.Sum(g => g.Stats.ZeroPointOnePercentLowAverage)))"
+                         XValue="@(e => e.Cpu)" />
         
-        <ApexPointSeries TItem="FramerateCapture"
-                         Items="Captures"
-                         Name="FPS Avg"
+        <ApexPointSeries TItem="FramerateCaptureGroup"
+                         Items="CaptureGroups"
+                         Name="1% Low Avg FPS"
                          SeriesType="SeriesType.Bar"
-                         YAggregate="@(e => e.Sum(x => (decimal)x.AggregatesRunStats.Average))"
+                         YAggregate="@(e => (decimal)(e.Sum(g => g.Stats.OnePercentLowAverage)))"
                          XValue="@(e => e.Cpu)" />
 
-        <ApexPointSeries TItem="FramerateCapture"
-                         Items="Captures"
-                         Name="FPS 10%"
+        <ApexPointSeries TItem="FramerateCaptureGroup"
+                         Items="CaptureGroups"
+                         Name="10% Low Avg FPS"
                          SeriesType="SeriesType.Bar"
-                         YAggregate="@(e => e.Sum(x => (decimal)x.AggregatesRunStats.TenPercentLowAverage))"
+                         YAggregate="@(e => (decimal)(e.Sum(g => g.Stats.TenPercentLowAverage)))"
                          XValue="@(e => e.Cpu)" />
 
-        <ApexPointSeries TItem="FramerateCapture"
-                         Items="Captures"
-                         Name="FPS 1%"
+        <ApexPointSeries TItem="FramerateCaptureGroup"
+                         Items="CaptureGroups"
+                         Name="Avg FPS"
                          SeriesType="SeriesType.Bar"
-                         YAggregate="@(e => e.Sum(x => (decimal)x.AggregatesRunStats.OnePercentLowAverage))"
-                         XValue="@(e => e.Cpu)" />
-
-        <ApexPointSeries TItem="FramerateCapture"
-                         Items="Captures"
-                         Name="FPS 0.1%"
-                         SeriesType="SeriesType.Bar"
-                         YAggregate="@(e => e.Sum(x => (decimal)x.AggregatesRunStats.ZeroPointOnePercentLowAverage))"
+                         YAggregate="@(e => (decimal)(e.Sum(g => g.Stats.Average)))"
                          XValue="@(e => e.Cpu)" />
     </ApexChart>
 </MudContainer>
 
 @code {
-    [Parameter] public List<FramerateCapture> Captures { get; set; }
+    [Parameter]
+    public IList<FramerateCaptureGroup> CaptureGroups { get; set; }
 
-    private ApexChartOptions<FramerateCapture> options;
+    private ApexChartOptions<FramerateCaptureGroup> options;
 
     protected override void OnInitialized()
     {
-        options = new ApexChartOptions<FramerateCapture>
+        options = new ApexChartOptions<FramerateCaptureGroup>
         {
             Chart = new Chart
             {
@@ -61,7 +62,7 @@
                 Bar = new PlotOptionsBar
                 {
                     Horizontal = true,
-                    BarHeight = "15%"
+                    BarHeight = "20%"
                 }
             },
             Theme = new Theme { Mode = Mode.Light, Palette = PaletteType.Palette8 },
@@ -70,7 +71,7 @@
             {
                 Title = new AxisTitle
                 {
-                    Text = "FPS",
+                    Text = "Framerate",
                     Style = new AxisTitleStyle
                     {
                         FontSize = "14px"
@@ -110,13 +111,8 @@
             {
                 Formatter = "function (val) { return val.toFixed(1); }"
             },
-            Colors = new List<string> { "#1f77b4", "#2ca02c", "#ff7f0e", "#ff4d00" }
+            Colors = new List<string> { "#ff4d00", "#ff7f0e", "#2ca02c", "#1f77b4" }
         };
-
-        Captures = Captures
-            .GroupBy(c => c.Cpu)
-            .SelectMany(c => c)
-            .ToList();
 
         base.OnInitialized();
     }

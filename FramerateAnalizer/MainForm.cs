@@ -370,10 +370,10 @@ namespace FramerateAnalizer
                             capture.Gpu,
                             capture.GameName,
                             capture.GameSettings,
-                            capture.AggregatesRunStats.Average.ToString("N1"),
-                            capture.AggregatesRunStats.TenPercentLowAverage.ToString("N1"),
-                            capture.AggregatesRunStats.OnePercentLowAverage.ToString("N1"),
-                            capture.AggregatesRunStats.ZeroPointOnePercentLowAverage.ToString("N1")
+                            capture.Stats.Average.ToString("N1"),
+                            capture.Stats.TenPercentLowAverage.ToString("N1"),
+                            capture.Stats.OnePercentLowAverage.ToString("N1"),
+                            capture.Stats.ZeroPointOnePercentLowAverage.ToString("N1")
                         );
                     }
 
@@ -428,16 +428,16 @@ namespace FramerateAnalizer
             statsText.AppendLine($"=== ESTATÍSTICAS DO ARQUIVO ===\n");
             statsText.AppendLine($"Arquivo: {capture.FileName}");
             statsText.AppendLine($"Jogo: {capture.GameName}");
-            statsText.AppendLine($"Número de Runs: {capture.RunStats.Count}\n");
+            statsText.AppendLine($"Número de Runs: {capture.Runs.Count}\n");
 
-            for (int i = 0; i < capture.RunStats.Count; i++)
+            for (int i = 0; i < capture.Runs.Count; i++)
             {
-                var run = capture.RunStats[i];
+                var run = capture.Runs[i];
                 statsText.AppendLine($"--- Run {i + 1} ---");
-                statsText.AppendLine($"FPS Médio: {run.Average:N1}");
-                statsText.AppendLine($"10% Low: {run.TenPercentLowAverage:N1} FPS");
-                statsText.AppendLine($"1% Low: {run.OnePercentLowAverage:N1} FPS");
-                statsText.AppendLine($"0.1% Low: {run.ZeroPointOnePercentLowAverage:N1} FPS");
+                statsText.AppendLine($"FPS Médio: {run.Stats.Average:N1}");
+                statsText.AppendLine($"10% Low: {run.Stats.TenPercentLowAverage:N1} FPS");
+                statsText.AppendLine($"1% Low: {run.Stats.OnePercentLowAverage:N1} FPS");
+                statsText.AppendLine($"0.1% Low: {run.Stats.ZeroPointOnePercentLowAverage:N1} FPS");
                 statsText.AppendLine();
             }
 
@@ -471,23 +471,22 @@ namespace FramerateAnalizer
 
         private void UpdateFrameTimesChart(FramerateCapture capture)
         {
-            if (!capture.RunStats.Any())
+            if (!capture.Runs.Any())
             {
                 chartFrameTimes.Series[0].Points.Clear();
                 return;
             }
 
             var run = capture.Runs[0];
-            var frameTimes = run.FrameTimes;
 
             chartFrameTimes.Series[0].Points.Clear();
             chartFrameTimes.ChartAreas[0].AxisX.Title = "Frame";
             chartFrameTimes.ChartAreas[0].AxisY.Title = "Frame Time (ms)";
-            chartFrameTimes.ChartAreas[0].AxisX.Interval = frameTimes.Count / 10;
+            chartFrameTimes.ChartAreas[0].AxisX.Interval = run.FrameTimes.Count / 10;
 
-            for (int i = 0; i < frameTimes.Count; i++)
+            for (int i = 0; i < run.FrameTimes.Count; i++)
             {
-                chartFrameTimes.Series[0].Points.AddXY(i + 1, frameTimes[i]);
+                chartFrameTimes.Series[0].Points.AddXY(i + 1, run.FrameTimes[i]);
             }
 
             chartFrameTimes.Titles.Clear();
@@ -502,10 +501,7 @@ namespace FramerateAnalizer
 
         private void button2_Click(object sender, EventArgs e)
         {
-            IList<FramerateAggregatedPerformance> aggregatedPerformances = framerateCaptures
-                .GroupBy(c => $"{c.Cpu}|{c.Gpu}|{c.Memory}")
-                .Select(c => new FramerateAggregatedPerformance(c.ToList()))
-                .ToList();
+            IList<FramerateCaptureGroup> aggregatedPerformances = FramerateCaptureGroupFactory.Create(captures);
 
             string report = new AggregatePerformanceReporter().ReportePerformance(aggregatedPerformances, "\t");
 
@@ -520,10 +516,7 @@ namespace FramerateAnalizer
 
         public Stream GeneratePerformanceCsv()
         {
-            IList<FramerateAggregatedPerformance> aggregatedPerformances = framerateCaptures
-                .GroupBy(c => $"{c.Cpu}|{c.Gpu}|{c.Memory}")
-                .Select(c => new FramerateAggregatedPerformance(c.ToList()))
-                .ToList();
+            IList<FramerateCaptureGroup> aggregatedPerformances = FramerateCaptureGroupFactory.Create(captures);
 
             string report = new AggregatePerformanceReporter().ReportePerformance(aggregatedPerformances, ",");
 

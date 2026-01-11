@@ -25,7 +25,7 @@
                                Accept=".json"
                                FilesChanged="UploadFiles"
                                AppendMultipleFiles="true"
-                               MaximumFileCount="25">
+                               MaximumFileCount="100">
                     <ActivatorContent>
                         <MudButton Variant="Variant.Filled"
                                    Color="Color.Primary"
@@ -77,55 +77,50 @@
     <Columns>
         <PropertyColumn Property="x => x.GameName"
                         Title="Game"
-                        HeaderStyle="width: 140px;"
-                        CellStyle="width: 140px;"/>
+                        />
 
         <PropertyColumn Property="x => x.GameSettings"
                         Title="Game Settings"
-                        HeaderStyle="width: 100px;"
-                        CellStyle="width: 100px;" />
-
-        <PropertyColumn Property="x => x.AggregatesRunStats.Average"
-                        Title="Avg FPS"
-                        Format="F1"
-                        HeaderStyle="width: 90px; text-align: right;"
-                        CellStyle="width: 90px; text-align: right;" />
-
-        <PropertyColumn Property="x => x.Cpu"
-                        Title="CPU"
-                        HeaderStyle="width: 300px;"
-                        CellStyle="width: 300px;" />
+                        />
 
         <PropertyColumn Property="x => x.Gpu"
                         Title="GPU"
-                        HeaderStyle="width: 300px;"
-                        CellStyle="width: 300px;" />
+                        />
 
-        <PropertyColumn Property="x => x.AggregatesRunStats.TenPercentLowAverage"
+        <PropertyColumn Property="x => x.Cpu"
+                        Title="CPU"
+                         />
+
+        <PropertyColumn Property="x => x.Memory"
+                        Title="Memory" />
+
+        <PropertyColumn Property="x => x.Stats.Average"
+                        Title="Avg FPS"
+                        Format="F1"
+                        CellStyle="text-align: right;" />
+
+        <PropertyColumn Property="x => x.Stats.TenPercentLowAverage"
                         Title="10% Low Avg FPS"
                         Format="F1"
-                        HeaderStyle="width: 140px; text-align: right;"
-                        CellStyle="width: 140px; text-align: right;" />
+                        CellStyle="text-align: right;" />
 
-        <PropertyColumn Property="x => x.AggregatesRunStats.OnePercentLowAverage"
+        <PropertyColumn Property="x => x.Stats.OnePercentLowAverage"
                         Title="1% Low Avg FPS"
                         Format="F1"
-                        HeaderStyle="width: 130px; text-align: right;"
-                        CellStyle="width: 130px; text-align: right;" />
+                        CellStyle="text-align: right;" />
 
-        <PropertyColumn Property="x => x.AggregatesRunStats.ZeroPointOnePercentLowAverage"
+        <PropertyColumn Property="x => x.Stats.ZeroPointOnePercentLowAverage"
                         Title="0.1% Low Avg FPS"
                         Format="F1"
-                        HeaderStyle="width: 140px; text-align: right;"
-                        CellStyle="width: 140px; text-align: right;" />
+                        CellStyle="text-align: right;" />
     </Columns>
 </MudDataGrid>
 
-@if (Captures.Any())
+@if (CaptureGroups.Any())
 {
-    <BarChart Captures="Captures" />
+    <FramerateChart CaptureGroups="CaptureGroups" />
+    <AggregatedFramerateChart CaptureGroups="CaptureGroups" />
 }
-
 
 <script>
         window.copyToClipboard = async (text) => {
@@ -148,12 +143,15 @@
 </script>
 
 @code {
-    public List<CapFrameXData> Data { get; set; } = new List<CapFrameXData>();
-    List<FramerateCapture> Captures = new List<FramerateCapture>();
+    public IList<CapFrameXData> Data { get; set; } = new List<CapFrameXData>();
 
-    List<ChartSeries> selectedFrameTime;
+    IList<FramerateCapture> Captures = new List<FramerateCapture>();
 
-    CapFrameXData selectedRow = new CapFrameXData();
+    IList<FramerateCaptureGroup> CaptureGroups = new List<FramerateCaptureGroup>();
+
+    IList<ChartSeries> selectedFrameTime;
+
+    //CapFrameXData selectedRow = new CapFrameXData();
 
     List<decimal> frameTimes = new List<decimal>();
     IList<IBrowserFile> files = new List<IBrowserFile>();
@@ -192,6 +190,7 @@
         }
 
         Captures = capFrameReader.GetFramerateCaptures(Data);
+        CaptureGroups = FramerateCaptureGroupFactory.Create(Captures);
 
         games = Captures
             .Select(x => x.GameName)
@@ -206,12 +205,7 @@
 
     private async Task CopyToClipboard()
     {
-        IList<FramerateAggregatedPerformance> aggregatedPerformances = Captures
-                .GroupBy(c => $"{c.Cpu}|{c.Gpu}|{c.Memory}")
-                .Select(c => new FramerateAggregatedPerformance(c.ToList()))
-                .ToList();
-
-        string report = new AggregatePerformanceReporter().ReportePerformance(aggregatedPerformances, ",");
+        string report = new AggregatePerformanceReporter().ReportePerformance(CaptureGroups, ",");
 
         await JS.InvokeVoidAsync("navigator.clipboard.writeText", report);
         Snackbar.Add("Copied!", Severity.Success);
@@ -219,9 +213,9 @@
 
     private async Task RowClicked(DataGridRowClickEventArgs<FramerateCapture> args)
     {
-        var capture = args.Item;
-        var data = Data.FirstOrDefault(x => x.FileName == capture.FileName);
+        //var capture = args.Item;
+        //var data = Data.FirstOrDefault(x => x.FileName == capture.FileName);
 
-        selectedRow = data;
+        //selectedRow = data;
     }
 }

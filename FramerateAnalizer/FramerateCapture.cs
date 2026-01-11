@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace FramerateAnalizer;
 
 public class FramerateCapture
 {
-    public FramerateCapture(string filePath, string cpu, string gpu, string memory, string gameName,
-        string gameSettings, DateTime captureDate, IList<RunFrameCapture> runs)
+    public FramerateCapture(string fileName, string cpu, string gpu, string memory, string gameName,
+        string gameSettings, DateTime captureDate, IList<FrameCaptureRun> runs)
     {
         ArgumentNullException.ThrowIfNull(runs, nameof(runs));
 
-        FilePath = filePath;
+        FileName = fileName;
         Cpu = cpu;
         Gpu = gpu;
         Memory = memory;
@@ -20,11 +19,24 @@ public class FramerateCapture
         GameSettings = gameSettings;
         CaptureDate = captureDate;
         Runs = runs;
-        RunStats = runs.Select(c => new FrameratePerformanceStats(c)).ToList();
-        AggregatesRunStats = new FrameratePerformanceStats(RunStats);
+
+        SetAggregatedStats(runs);
     }
 
-    public string FilePath { get; }
+    private void SetAggregatedStats(IList<FrameCaptureRun> runs)
+    {
+        IList<FramerateStats> runStats = runs.Select(r => r.Stats).ToList();
+
+        double average = runStats.Average(s => s.Average);
+        double tenPercentLowAverage = runStats.Average(s => s.TenPercentLowAverage);
+        double onePercentLowAverage = runStats.Average(s => s.OnePercentLowAverage);
+        double zeroPointOnePercentLowAverage = runStats.Average(s => s.ZeroPointOnePercentLowAverage);
+
+        Stats = new FramerateStats(average, tenPercentLowAverage, onePercentLowAverage,
+            zeroPointOnePercentLowAverage);
+    }
+
+    public string FileName { get; }
 
     public string Cpu { get; }
 
@@ -38,21 +50,22 @@ public class FramerateCapture
 
     public DateTime CaptureDate { get; }
 
-    public IList<RunFrameCapture> Runs { get; }
+    public IList<FrameCaptureRun> Runs { get; }
 
-    public IList<FrameratePerformanceStats> RunStats { get; }
-
-    public FrameratePerformanceStats AggregatesRunStats { get; }
-
-    public string FileName { get { return Path.GetFileName(FilePath); } }
+    public FramerateStats Stats { get; private set; }
 
     public override bool Equals(object? obj)
     {
-        return obj is FramerateCapture other && FilePath == other.FilePath;
+        return obj is FramerateCapture other && FileName == other.FileName;
     }
 
     public override int GetHashCode()
     {
-        return FilePath.GetHashCode();
+        return FileName.GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return $"{Cpu} - {Gpu} - {Memory} - {GameName} - {GameSettings}";
     }
 }
