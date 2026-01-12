@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
+﻿using FramerateAnalyzer.Domain;
 
-namespace FramerateAnalizer
+namespace FramerateAnalizer.Infrastructure
 {
     public class AggregatePerformanceReporter
     {
-        public string ReportePerformance(IList<FramerateCaptureGroup> captureGroups, string delimiter)
+        public string ReportPerformance(IList<FramerateCaptureGroup> captureGroups, string delimiter)
         {
             captureGroups = captureGroups
                 .OrderBy(p => p.Stats.AggregatedFramerate())

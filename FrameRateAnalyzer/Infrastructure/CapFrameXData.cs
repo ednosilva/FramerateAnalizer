@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace FramerateAnalizer
+namespace FramerateAnalyzer.Infrastructure
 {
     public class CapFrameXData
     {

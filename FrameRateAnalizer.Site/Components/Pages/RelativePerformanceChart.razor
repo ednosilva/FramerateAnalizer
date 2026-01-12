@@ -1,6 +1,7 @@
 ﻿@using ApexCharts
 @using FramerateAnalizer
 @using System.Threading.Tasks
+@using FramerateAnalyzer.Domain
 
 <ApexChart @ref="chart" TItem="FramerateCaptureGroup" Title="Relativae Performance" Options=options OnDataPointSelection="DataPointSelected">
     <ApexPointSeries TItem="FramerateCaptureGroup"
@@ -8,7 +9,7 @@
                     Name="Relativae Performance"
                     SeriesType="SeriesType.Bar"
                     XValue="@(e => e.BenchmarkedParts)"
-                     YAggregate="@(e => (decimal)e.Sum(g => g.RelativePerformance(referenceCaptureGroup).AggregatedFramerate()))"
+                    YAggregate="@(e => (decimal)e.Sum(g => g.RelativePerformance(referenceCaptureGroup).AggregatedFramerate()))"
                     ShowDataLabels />
 </ApexChart>
 

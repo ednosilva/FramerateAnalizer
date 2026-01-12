@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FramerateAnalizer\FramerateAnalizer.csproj" />
+    <ProjectReference Include="..\FrameRateAnalyzer\FramerateAnalyzer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,8 @@
 ﻿@page "/"
 
-@using FramerateAnalizer
+@using FramerateAnalizer.Infrastructure
+@using FramerateAnalyzer.Domain
+@using FramerateAnalyzer.Infrastructure
 @using MudBlazor
 @using System.Text.Json
 @using System.Globalization
@@ -14,7 +16,7 @@
     <MudStack>
         <MudPaper Elevation="0" Outlined Class="mt-2">
             <MudDataGrid T="FramerateCapture" Items="@Captures" RowClick="@RowClicked" Height="303px" Style="table-layout: fixed;"
-                         Dense Hover FixedHeader Groupable>
+                         Loading="loading" Dense Hover FixedHeader Groupable>
                 <ToolBarContent>
                     <MudStack Row AlignItems="AlignItems.Center" Class="w-100">
 
@@ -156,8 +158,12 @@
     string selectedGame = string.Empty;
     string selectedGameSettings = string.Empty;
 
+    bool loading;
+
     private async Task UploadFiles(IReadOnlyList<IBrowserFile> files)
     {
+        loading = true;
+
         if (Data.Any() && Captures.Any())
         {
             var duplicatedFiles = files
@@ -171,7 +177,7 @@
             files = files.Where(f => !Data.Select(d => d.FileName).Contains(f.Name)).ToList();
         }
 
-        var capFrameReader = new CapFrameXReader();
+        var capFrameReader = new FramerateCaptureReader();
 
         foreach (var file in files)
         {
@@ -186,6 +192,8 @@
         Captures = capFrameReader.GetFramerateCaptures(Data);
         CaptureGroups = FramerateCaptureGroupFactory.Create(Captures);
 
+        loading = false;
+
         games = Captures
             .Select(x => x.GameName)
             .Distinct()
@@ -199,7 +207,7 @@
 
     private async Task CopyToClipboard()
     {
-        string report = new AggregatePerformanceReporter().ReportePerformance(CaptureGroups, ";");
+        string report = new AggregatePerformanceReporter().ReportPerformance(CaptureGroups, ";");
 
         await JS.InvokeVoidAsync("navigator.clipboard.writeText", report);
         Snackbar.Add("Copied!", Severity.Success);

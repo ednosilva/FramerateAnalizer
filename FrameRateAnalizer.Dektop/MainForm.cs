@@ -1,3 +1,6 @@
+using FramerateAnalizer.Infrastructure;
+using FramerateAnalyzer.Domain;
+using FramerateAnalyzer.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +13,7 @@ namespace FramerateAnalizer
 {
     public partial class MainForm : Form
     {
-        private CapFrameXReader reader;
+        private FramerateCaptureReader reader;
         private List<CapFrameXData> loadedData;
         private List<FramerateCapture> captures;
 
@@ -40,7 +43,7 @@ namespace FramerateAnalizer
         private void InitializeComponents()
         {
             // Inicializar componentes
-            reader = new CapFrameXReader();
+            reader = new FramerateCaptureReader();
             loadedData = new List<CapFrameXData>();
             framerateCaptures = new BindingList<FramerateCapture>();
 
@@ -503,7 +506,7 @@ namespace FramerateAnalizer
         {
             IList<FramerateCaptureGroup> aggregatedPerformances = FramerateCaptureGroupFactory.Create(captures);
 
-            string report = new AggregatePerformanceReporter().ReportePerformance(aggregatedPerformances, "\t");
+            string report = new AggregatePerformanceReporter().ReportPerformance(aggregatedPerformances, "\t");
 
             if (MessageBox.Show("Copy to Clipboard?", "Success", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 Clipboard.SetText(report);
@@ -518,7 +521,7 @@ namespace FramerateAnalizer
         {
             IList<FramerateCaptureGroup> aggregatedPerformances = FramerateCaptureGroupFactory.Create(captures);
 
-            string report = new AggregatePerformanceReporter().ReportePerformance(aggregatedPerformances, ",");
+            string report = new AggregatePerformanceReporter().ReportPerformance(aggregatedPerformances, ",");
 
             var file = "performance_report.csv";
 
