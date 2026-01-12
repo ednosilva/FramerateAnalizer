@@ -2,23 +2,28 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs/FramerateAnalizer/config
-/.vs/FramerateAnalizer/CopilotIndices/17.14.1561.44479
-/.vs/FramerateAnalizer/DesignTimeBuild
-/.vs/FramerateAnalizer/FileContentIndex
-/.vs/FramerateAnalizer/v17
+/.vs/FrameRateAnalizer/config
+/.vs/FrameRateAnalizer/CopilotIndices/17.14.1561.44479
+/.vs/FrameRateAnalizer/DesignTimeBuild
+/.vs/FrameRateAnalizer/FileContentIndex
+/.vs/FrameRateAnalizer/v17
 /.vs/ProjectEvaluation
-/FramerateAnalizer/bin/Debug/net10.0-windows7.0
-/FramerateAnalizer/obj
+/FrameRateAnalizer/bin/Debug/net10.0-windows7.0
+/FrameRateAnalizer/obj
 /FrameRateAnalizer.Site/bin/Debug/net10.0-windows7.0
 /FrameRateAnalizer.Site/obj
 /.vs
 /FramerateAnalize.Website/bin/Debug/net9
 /FramerateAnalize.Website/obj
-/FramerateAnalizer.Domain/bin/Debug/net9.0
-/FramerateAnalizer.Domain/obj
+/FrameRateAnalizer.Domain/bin/Debug/net9.0
+/FrameRateAnalizer.Domain/obj
 /FramerateAnalize.Website/bin/Debug/net10.0
 /FrameRateAnalizer.Dektop/bin/Debug/net10.0-windows7.0
 /FrameRateAnalizer.Dektop/obj
 /FrameRateAnalyzer/bin/Debug
 /FrameRateAnalyzer/obj
+/FrameRateAnalizer.Site/bin/Release/net10.0/publish
+/FrameRateAnalizer.Site/bin/Release/net10.0-windows7.0
+/FrameRateAnalyzer/bin/Release/net10.0
+/FrameRateAnalizer.Dektop/bin/Release/net10.0-windows7.0
+/FramerateAnalize.Website/bin/Release/net10.0
