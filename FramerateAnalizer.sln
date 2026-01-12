@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36811.4
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11205.157
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FramerateAnalizer", "FramerateAnalizer\FramerateAnalizer.csproj", "{AB04BA37-753A-4435-9DD0-A0AF08F3C1EA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameRateAnalizer.Site", "FrameRateAnalizer.Site\FrameRateAnalizer.Site.csproj", "{C72A3FF2-C5D7-4041-833C-3105AD199D51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FramerateAnalyzer", "FrameRateAnalyzer\FramerateAnalyzer.csproj", "{09D14C75-F68A-EB0E-A10D-5CB46EEB74C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameRateAnalizer.Desktop", "FrameRateAnalizer.Dektop\FrameRateAnalizer.Desktop.csproj", "{1E03B1AA-11EB-80CA-CD76-CBAC115831B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +15,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AB04BA37-753A-4435-9DD0-A0AF08F3C1EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB04BA37-753A-4435-9DD0-A0AF08F3C1EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB04BA37-753A-4435-9DD0-A0AF08F3C1EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AB04BA37-753A-4435-9DD0-A0AF08F3C1EA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C72A3FF2-C5D7-4041-833C-3105AD199D51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C72A3FF2-C5D7-4041-833C-3105AD199D51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C72A3FF2-C5D7-4041-833C-3105AD199D51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C72A3FF2-C5D7-4041-833C-3105AD199D51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09D14C75-F68A-EB0E-A10D-5CB46EEB74C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09D14C75-F68A-EB0E-A10D-5CB46EEB74C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09D14C75-F68A-EB0E-A10D-5CB46EEB74C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09D14C75-F68A-EB0E-A10D-5CB46EEB74C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E03B1AA-11EB-80CA-CD76-CBAC115831B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E03B1AA-11EB-80CA-CD76-CBAC115831B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E03B1AA-11EB-80CA-CD76-CBAC115831B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E03B1AA-11EB-80CA-CD76-CBAC115831B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

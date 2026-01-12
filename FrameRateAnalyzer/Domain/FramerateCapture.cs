@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FramerateAnalizer;
+namespace FramerateAnalyzer.Domain;
 
 public class FramerateCapture
 {

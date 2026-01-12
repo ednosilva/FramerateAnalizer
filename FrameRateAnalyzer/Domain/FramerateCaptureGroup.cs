@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.Linq;
 
-namespace FramerateAnalizer;
+namespace FramerateAnalyzer.Domain;
 
 public class FramerateCaptureGroup
 {
