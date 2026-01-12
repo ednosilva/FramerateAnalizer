@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FramerateAnalizer", "Framer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameRateAnalizer.Site", "FrameRateAnalizer.Site\FrameRateAnalizer.Site.csproj", "{C72A3FF2-C5D7-4041-833C-3105AD199D51}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FramerateAnalizer.Website", "FramerateAnalize.Website\FramerateAnalizer.Website.csproj", "{F6431365-3D03-46E9-8020-653990113D82}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FramerateAnalizer.Domain", "FramerateAnalizer.Domain\FramerateAnalizer.Domain.csproj", "{5465E995-D4FF-48C7-AD4E-AD824AB1D839}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{C72A3FF2-C5D7-4041-833C-3105AD199D51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C72A3FF2-C5D7-4041-833C-3105AD199D51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C72A3FF2-C5D7-4041-833C-3105AD199D51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6431365-3D03-46E9-8020-653990113D82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6431365-3D03-46E9-8020-653990113D82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6431365-3D03-46E9-8020-653990113D82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6431365-3D03-46E9-8020-653990113D82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5465E995-D4FF-48C7-AD4E-AD824AB1D839}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5465E995-D4FF-48C7-AD4E-AD824AB1D839}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5465E995-D4FF-48C7-AD4E-AD824AB1D839}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5465E995-D4FF-48C7-AD4E-AD824AB1D839}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

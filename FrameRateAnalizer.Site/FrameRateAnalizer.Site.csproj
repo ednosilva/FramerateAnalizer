@@ -17,4 +17,8 @@
     <ProjectReference Include="..\FramerateAnalizer\FramerateAnalizer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Components\Pages\" />
+  </ItemGroup>
+
 </Project>
