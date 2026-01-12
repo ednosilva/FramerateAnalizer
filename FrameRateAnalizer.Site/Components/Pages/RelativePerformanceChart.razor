@@ -1,35 +1,42 @@
 ﻿@using ApexCharts
 @using FramerateAnalizer
+@using System.Threading.Tasks
 
-<ApexChart TItem="FramerateCaptureGroup" Title="Aggregated Framerate (Weighted GeoMean)" Options=options OnClick="PointSelected">
+<ApexChart @ref="chart" TItem="FramerateCaptureGroup" Title="Relativae Performance" Options=options OnDataPointSelection="DataPointSelected">
     <ApexPointSeries TItem="FramerateCaptureGroup"
-                        Items="CaptureGroups"
-                        Name="Aggregated Framerate"                        
-                        SeriesType="SeriesType.Bar"
-                        XValue="@(e => e.BenchmarkedParts)"
-                        YAggregate="@(e => (decimal)e.Sum(g => g.Stats.AggregatedFramerate()))"
-                        ShowDataLabels />
+                    Items="CaptureGroups"
+                    Name="Relativae Performance"
+                    SeriesType="SeriesType.Bar"
+                    XValue="@(e => e.BenchmarkedParts)"
+                     YAggregate="@(e => (decimal)e.Sum(g => g.RelativePerformance(referenceCaptureGroup).AggregatedFramerate()))"
+                    ShowDataLabels />
 </ApexChart>
 
 @code {
     [Parameter]
     public IList<FramerateCaptureGroup> CaptureGroups { get; set; }
 
+    private ApexChart<FramerateCaptureGroup> chart;
+
     private ApexChartOptions<FramerateCaptureGroup> options;
+
+    private FramerateCaptureGroup referenceCaptureGroup;
 
     protected override void OnInitialized()
     {
+        referenceCaptureGroup = CaptureGroups.First();
+
         options = new ApexChartOptions<FramerateCaptureGroup>
         {
             Chart = new Chart
             {
                 Stacked = false,
-                StackType = StackType.Normal,
+                StackType = StackType.Percent100,
                 Toolbar = new Toolbar
                 {
                     Show = false
                 },
-                //Height = CaptureGroups.Count * 80 + 100
+                Height = CaptureGroups.Count * 80 + 100
             },
             PlotOptions = new PlotOptions
             {
@@ -76,7 +83,7 @@
             },
             DataLabels = new DataLabels
             {
-                Formatter = "function (val) { return val.toFixed(1); }",
+                Formatter = "function (val) { return (val * 100).toFixed(1) + '%'; }",
                 OffsetX = -25
             },
             Colors = [Colors.Blue.Darken3],
@@ -89,8 +96,18 @@
         base.OnInitialized();
     }
 
-    private void PointSelected(SelectedData<FramerateCaptureGroup> data)
+    public async Task DataPointSelected(SelectedData<FramerateCaptureGroup> selectedData)
     {
-        //reference = data;
+        if (selectedData != null)
+        {
+            var newReferenceCaptureGroup = (FramerateCaptureGroup)selectedData.DataPoint.Items.First();
+
+            if (!referenceCaptureGroup.Equals(newReferenceCaptureGroup))
+            {
+                referenceCaptureGroup = newReferenceCaptureGroup;
+                await chart.RenderAsync();
+                //await chart.UpdateSeriesAsync(true);
+            }
+        }
     }
 }
