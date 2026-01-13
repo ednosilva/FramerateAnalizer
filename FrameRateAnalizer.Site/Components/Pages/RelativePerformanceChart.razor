@@ -1,5 +1,5 @@
 ﻿@using ApexCharts
-@using FramerateAnalizer
+@using FrameRateAnalizer
 @using System.Threading.Tasks
 @using FramerateAnalyzer.Domain
 
@@ -9,7 +9,7 @@
                     Name="Relativae Performance"
                     SeriesType="SeriesType.Bar"
                     XValue="@(e => e.BenchmarkedParts)"
-                    YAggregate="@(e => (decimal)e.Sum(g => g.RelativePerformance(referenceCaptureGroup).AggregatedFramerate()))"
+                    YAggregate="@(e => (decimal)e.Sum(g => g.RelativePerformance(referenceCaptureGroup).AggregatedFramerate))"
                     ShowDataLabels />
 </ApexChart>
 

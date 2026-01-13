@@ -1,6 +1,6 @@
 ﻿@page "/"
 
-@using FramerateAnalizer.Infrastructure
+@using FrameRateAnalizer.Infrastructure
 @using FramerateAnalyzer.Domain
 @using FramerateAnalyzer.Infrastructure
 @using MudBlazor
@@ -207,7 +207,12 @@
 
     private async Task CopyToClipboard()
     {
-        string report = new AggregatePerformanceReporter().ReportPerformance(CaptureGroups, ";");
+        FramerateCaptureGroup referenceCaptureGroup = CaptureGroups
+            .OrderByDescending(games => games.Stats.AggregatedFramerate)
+            .First();
+
+        string report = new AggregatePerformanceReporter()
+        .ReportPerformance(CaptureGroups, referenceCaptureGroup, ";");
 
         await JS.InvokeVoidAsync("navigator.clipboard.writeText", report);
         Snackbar.Add("Copied!", Severity.Success);

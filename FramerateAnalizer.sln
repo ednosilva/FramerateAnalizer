@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36811.4 d17.14
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11205.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameRateAnalizer.Site", "FrameRateAnalizer.Site\FrameRateAnalizer.Site.csproj", "{C72A3FF2-C5D7-4041-833C-3105AD199D51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FramerateAnalyzer", "FrameRateAnalyzer\FramerateAnalyzer.csproj", "{09D14C75-F68A-EB0E-A10D-5CB46EEB74C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameRateAnalyzer", "FrameRateAnalyzer\FrameRateAnalyzer.csproj", "{09D14C75-F68A-EB0E-A10D-5CB46EEB74C1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameRateAnalizer.Desktop", "FrameRateAnalizer.Dektop\FrameRateAnalizer.Desktop.csproj", "{1E03B1AA-11EB-80CA-CD76-CBAC115831B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FramerateAnalizer.Website", "FramerateAnalize.Website\FramerateAnalizer.Website.csproj", "{F6431365-3D03-46E9-8020-653990113D82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameRateAnalizer.Website", "FramerateAnalize.Website\FrameRateAnalizer.Website.csproj", "{F6431365-3D03-46E9-8020-653990113D82}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
