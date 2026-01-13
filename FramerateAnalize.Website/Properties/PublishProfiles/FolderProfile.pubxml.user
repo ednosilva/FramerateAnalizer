@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- https://go.microsoft.com/fwlink/?LinkID=208121. -->
-<Project>
-  <PropertyGroup>
-    <History>True|2026-01-13T00:52:13.4863000Z||;False|2026-01-12T12:54:54.1330901-03:00||;True|2026-01-12T12:28:38.8360464-03:00||;False|2026-01-12T12:27:57.5500281-03:00||;False|2026-01-12T12:25:46.2228447-03:00||;</History>
-    <LastFailureDetails />
-    <_PublishTargetUrl>D:\Edno\Workspace\FramerateAnalizer\FramerateAnalize.Website\bin\Release\net10.0\browser-wasm\publish\</_PublishTargetUrl>
-  </PropertyGroup>
-</Project>
