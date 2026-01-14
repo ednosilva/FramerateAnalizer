@@ -7,7 +7,7 @@
                         Name="Aggregated Framerate"                        
                         SeriesType="SeriesType.Bar"
                         XValue="@(e => e.BenchmarkedParts)"
-                        YAggregate="@(e => (decimal)e.Sum(g => g.Stats.AggregatedFramerate))"
+                        YAggregate="@(e => (decimal)e.Sum(g => g.Stats.AggregatedFramerate()))"
                         ShowDataLabels />
 </ApexChart>
 
