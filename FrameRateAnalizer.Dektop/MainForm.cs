@@ -1,4 +1,4 @@
-using FramerateAnalizer.Infrastructure;
+using FrameRateAnalizer.Infrastructure;
 using FramerateAnalyzer.Domain;
 using FramerateAnalyzer.Infrastructure;
 using System;
@@ -9,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace FramerateAnalizer
+namespace FrameRateAnalizer
 {
     public partial class MainForm : Form
     {
@@ -506,7 +506,9 @@ namespace FramerateAnalizer
         {
             IList<FramerateCaptureGroup> aggregatedPerformances = FramerateCaptureGroupFactory.Create(captures);
 
-            string report = new AggregatePerformanceReporter().ReportPerformance(aggregatedPerformances, "\t");
+            var reference = aggregatedPerformances.OrderByDescending(g => g.Stats.AggregatedFramerate).First();
+
+            string report = new AggregatePerformanceReporter().ReportPerformance(aggregatedPerformances, reference, "\t");
 
             if (MessageBox.Show("Copy to Clipboard?", "Success", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 Clipboard.SetText(report);
@@ -521,7 +523,9 @@ namespace FramerateAnalizer
         {
             IList<FramerateCaptureGroup> aggregatedPerformances = FramerateCaptureGroupFactory.Create(captures);
 
-            string report = new AggregatePerformanceReporter().ReportPerformance(aggregatedPerformances, ",");
+            var reference = aggregatedPerformances.OrderByDescending(g => g.Stats.AggregatedFramerate).First();
+
+            string report = new AggregatePerformanceReporter().ReportPerformance(aggregatedPerformances, reference, ",");
 
             var file = "performance_report.csv";
 

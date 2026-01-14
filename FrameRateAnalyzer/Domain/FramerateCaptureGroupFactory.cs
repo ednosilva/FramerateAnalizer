@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace FramerateAnalyzer.Domain
+﻿namespace FramerateAnalyzer.Domain
 {
     public class FramerateCaptureGroupFactory
     {
@@ -44,7 +40,7 @@ namespace FramerateAnalyzer.Domain
 
             return captures.GroupBy(c => $"{c.Cpu}|{c.Gpu}|{c.Memory}")
                 .Select(c => new FramerateCaptureGroup(c.ToList(), benchmarkedPartSelector))
-                .OrderByDescending(g => g.Stats.AggregatedFramerate())
+                //.OrderByDescending(g => g.Stats.AggregatedFramerate())
                 .ToList();
         }
     }

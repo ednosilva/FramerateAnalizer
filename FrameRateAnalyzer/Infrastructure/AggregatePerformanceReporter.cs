@@ -1,13 +1,14 @@
 ﻿using FramerateAnalyzer.Domain;
 
-namespace FramerateAnalizer.Infrastructure
+namespace FrameRateAnalizer.Infrastructure
 {
     public class AggregatePerformanceReporter
     {
-        public string ReportPerformance(IList<FramerateCaptureGroup> captureGroups, string delimiter)
+        public string ReportPerformance(IList<FramerateCaptureGroup> captureGroups,
+            FramerateCaptureGroup referenceCaptureGroup, string delimiter)
         {
             captureGroups = captureGroups
-                .OrderBy(p => p.Stats.AggregatedFramerate())
+                .OrderByDescending(p => p.Stats.AggregatedFramerate)
                 .ToList();
 
             var resultRows = new List<string>();
@@ -28,7 +29,7 @@ namespace FramerateAnalizer.Infrastructure
 
             foreach (var group in captureGroups)
             {
-                var relativePerformance = group.RelativePerformance(captureGroups.First());
+                var relativePerformance = group.RelativePerformance(referenceCaptureGroup);
 
                 string row = $"{group.BenchmarkedParts}{delimiter}";
 
