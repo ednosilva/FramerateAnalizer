@@ -4,23 +4,27 @@
 
 <ApexChart @ref="chart" TItem="FramerateCaptureGroup" Title="Relativae Performance" Options=options OnDataPointSelection="DataPointSelected">
     <ApexPointSeries TItem="FramerateCaptureGroup"
-                    Items="CaptureGroups"
-                    Name="Relativae Performance"
-                    SeriesType="SeriesType.Bar"
-                    XValue="@(e => e.BenchmarkedParts)"
+                     Items="CaptureGroups"
+                     Name="Relativae Performance"
+                     SeriesType="SeriesType.Bar"
+                     XValue="@(e => e.BenchmarkedParts)"
                      YAggregate="@(e => (decimal)e.Sum(g => g.RelativePerformance(referenceCaptureGroup).AggregatedFramerate()))"
-                    ShowDataLabels />
+                     ShowDataLabels />
 </ApexChart>
 
 @code {
     [Parameter]
     public IList<FramerateCaptureGroup> CaptureGroups { get; set; }
 
+    IDictionary<FramerateCaptureGroup, double> groups = new Dictionary<FramerateCaptureGroup, double>();
+
     private ApexChart<FramerateCaptureGroup> chart;
 
     private ApexChartOptions<FramerateCaptureGroup> options;
 
     private FramerateCaptureGroup referenceCaptureGroup;
+
+    decimal maxBarHeight = 1;
 
     protected override void OnInitialized()
     {
@@ -50,7 +54,6 @@
                     }
                 }
             },
-            //Theme = new Theme { Mode = Mode.Light, Palette = PaletteType.Palette8 },
             Xaxis = new XAxis
             {
                 Labels = new XAxisLabels
@@ -105,9 +108,27 @@
             if (!referenceCaptureGroup.Equals(newReferenceCaptureGroup))
             {
                 referenceCaptureGroup = newReferenceCaptureGroup;
+
+                await RelativePerformance();
+
+                options.Xaxis.Max = groups.First().Value;
+
                 await chart.RenderAsync();
-                //await chart.UpdateSeriesAsync(true);
             }
         }
+    }
+
+    private async Task RelativePerformance()
+    {
+        groups.Clear();
+
+        foreach (var group in CaptureGroups)
+        {
+            var relativePerformance = group.RelativePerformance(referenceCaptureGroup).AggregatedFramerate();
+            
+            groups.Add(group, relativePerformance);
+        }
+
+        groups.OrderBy(g => g.Value);
     }
 }
