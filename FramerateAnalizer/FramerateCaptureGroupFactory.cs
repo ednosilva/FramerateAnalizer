@@ -30,21 +30,22 @@ namespace FramerateAnalizer
             }
             else if (distinctGpus > 1)
             {
-                if (distinctCpus == 1 && distinctMemory == 1)
+                if (distinctMemory > 1)
+                    benchmarkedPartSelector = g => $"{g.Gpu} - {g.Memory}";
+                else
                     benchmarkedPartSelector = g => g.Gpu;
             }
             else if (distinctMemory > 1)
             {
-                if (distinctGpus == 1 && distinctMemory == 1)
-                    benchmarkedPartSelector = g => g.Memory;
+                benchmarkedPartSelector = g => g.Memory;
             }
-
-            if (benchmarkedPartSelector == null)
-                throw new ArgumentOutOfRangeException(nameof(captures));
+            else
+            {
+                benchmarkedPartSelector = g => $"{g.Cpu} - {g.Gpu} - {g.Memory}";
+            }
 
             return captures.GroupBy(c => $"{c.Cpu}|{c.Gpu}|{c.Memory}")
                 .Select(c => new FramerateCaptureGroup(c.ToList(), benchmarkedPartSelector))
-                .OrderByDescending(g => g.Stats.AggregatedFramerate())
                 .ToList();
         }
     }
