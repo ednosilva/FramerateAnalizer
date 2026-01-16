@@ -21,3 +21,13 @@
 /FrameRateAnalizer.Dektop/obj
 /FrameRateAnalyzer/bin
 /FrameRateAnalyzer/obj
+/BlazorApp1/bin/Debug/net9.0
+/FramerateAnalize.Website/bin/Debug
+/FramerateAnalize.Website/obj/Debug
+/FramerateAnalize.Website/obj/Debug/net10/FramerateAnalizer.Website.assets.cache
+/FramerateAnalize.Website/obj
+/FramerateAnalizer.Domain/bin/Debug/net9.0
+/FramerateAnalizer.Domain/obj
+/FrameRateAnalizer.Website/bin/Debug
+/FrameRateAnalizer.Website/obj
+*.user
