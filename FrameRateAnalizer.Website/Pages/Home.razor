@@ -176,19 +176,19 @@
             files = files.Where(f => !Data.Select(d => d.FileName).Contains(f.Name)).ToList();
         }
 
-        var capFrameReader = new FramerateCaptureReader();
+        var capFrameXReader = new FramerateCaptureReader();
 
         foreach (var file in files)
         {
             await using var stream = file.OpenReadStream(20 * 1024 * 1024);
 
-            var result = await capFrameReader.ReadFile(stream, file.Name);
+            var result = await capFrameXReader.ReadFile(stream, file.Name);
 
             if (result != null)
                 Data.Add(result);
         }
 
-        Captures = capFrameReader.GetFramerateCaptures(Data);
+        Captures = capFrameXReader.GetFramerateCaptures(Data);
         CaptureGroups = FramerateCaptureGroupFactory.Create(Captures);
 
         loading = false;

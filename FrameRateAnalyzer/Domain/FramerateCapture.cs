@@ -6,18 +6,17 @@ namespace FramerateAnalyzer.Domain;
 
 public class FramerateCapture
 {
-    public FramerateCapture(string fileName, string cpu, string gpu, string memory, string gameName,
-        string gameSettings, DateTime captureDate, IList<FrameCaptureRun> runs)
+    public FramerateCapture(string cpu, string gpu, string memory, string gameName, string gameSettings,
+        IList<FrameCaptureRun> runs, DateTime captureDate)
     {
         ArgumentNullException.ThrowIfNull(runs, nameof(runs));
 
-        FileName = fileName;
         Cpu = cpu;
         Gpu = gpu;
         Memory = memory;
         GameName = gameName;
         GameSettings = gameSettings;
-        CaptureDate = captureDate;
+        CreationDate = captureDate;
         Runs = runs;
 
         SetAggregatedStats(runs);
@@ -36,8 +35,6 @@ public class FramerateCapture
             zeroPointOnePercentLowAverage);
     }
 
-    public string FileName { get; }
-
     public string Cpu { get; }
 
     public string Gpu { get; }
@@ -48,7 +45,7 @@ public class FramerateCapture
 
     public string GameSettings { get; }
 
-    public DateTime CaptureDate { get; }
+    public DateTime CreationDate { get; }
 
     public IList<FrameCaptureRun> Runs { get; }
 
@@ -56,16 +53,33 @@ public class FramerateCapture
 
     public override bool Equals(object? obj)
     {
-        return obj is FramerateCapture other && FileName == other.FileName;
+        return obj is FramerateCapture other && new
+        {
+            Cpu,
+            Gpu,
+            Memory,
+            GameName,
+            GameSettings,
+            CreationDate
+        }
+        .Equals(new
+        {
+            other.Cpu,
+            other.Gpu,
+            other.Memory,
+            other.GameName,
+            other.GameSettings,
+            other.CreationDate
+        });
     }
 
     public override int GetHashCode()
     {
-        return FileName.GetHashCode();
+        return HashCode.Combine(Cpu, Gpu, Memory, GameName, GameSettings, CreationDate);
     }
 
     public override string ToString()
     {
-        return $"{Cpu} - {Gpu} - {Memory} - {GameName} - {GameSettings}";
+        return $"{Cpu} - {Gpu} - {Memory} - {GameName} - {GameSettings} - {CreationDate}";
     }
 }
