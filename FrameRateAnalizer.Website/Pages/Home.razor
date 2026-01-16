@@ -28,7 +28,7 @@
                                            MaximumFileCount="100">
                                 <ActivatorContent>
                                     <MudButton Variant="Variant.Filled"
-                                               Color="Color.Primary"
+                                               Color="MudBlazor.Color.Primary"
                                                StartIcon="@Icons.Material.Filled.CloudUpload"
                                                Style="width:200px">
                                         Load Files
@@ -39,7 +39,7 @@
                             @if (Captures.Any())
                             {
                                 <MudButton Variant="Variant.Filled"
-                                           Color="Color.Secondary"
+                                           Color="MudBlazor.Color.Secondary"
                                            OnClick="CopyToClipboard"
                                            Style="width:200px">
                                     Report Performance
@@ -71,7 +71,6 @@
                                 </MudSelect>
                             </MudStack>
                         }
-
                     </MudStack>
                 </ToolBarContent>
                 <Columns>
