@@ -429,7 +429,7 @@ namespace FrameRateAnalizer
         {
             var statsText = new System.Text.StringBuilder();
             statsText.AppendLine($"=== ESTATÍSTICAS DO ARQUIVO ===\n");
-            statsText.AppendLine($"Arquivo: {capture.FileName}");
+            //statsText.AppendLine($"Arquivo: {capture.FileName}");
             statsText.AppendLine($"Jogo: {capture.GameName}");
             statsText.AppendLine($"Número de Runs: {capture.Runs.Count}\n");
 
@@ -493,7 +493,7 @@ namespace FrameRateAnalizer
             }
 
             chartFrameTimes.Titles.Clear();
-            chartFrameTimes.Titles.Add($"Frame Times - {capture.FileName}");
+            //chartFrameTimes.Titles.Add($"Frame Times - {capture.FileName}");
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)

@@ -99,10 +99,10 @@ namespace FramerateAnalyzer.Infrastructure
 
                 IList<FrameCaptureRun> runs = gameAndSettingsCaptureData
                     .SelectMany(data => data.Runs ?? [])
-                    .Select(r => new FrameCaptureRun(r.CaptureData.TimeInSeconds))
+                    .Select(r => new FrameCaptureRun(r.Hash, r.CaptureData.MsBetweenPresents))
                     .ToList();
 
-                var creationDate = gameAndSettingsCaptureData.OrderBy(d => d.Info.CreationDate).First().Info.CreationDate;
+                var creationDate = gameAndSettingsCaptureData.OrderBy(d => d.Info.CreationDate).Last().Info.CreationDate;
 
                 var capture = new FramerateCapture(cpu, gpu, memory, gameName, gameSettings, runs, creationDate);
 

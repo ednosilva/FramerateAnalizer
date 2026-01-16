@@ -17,11 +17,16 @@
 
             if (distinctCpus > 1)
             {
-                if (distinctMemory > 1 && distinctGpus == 1)
-                    benchmarkedPartSelector = g => $"{g.Cpu} - {g.Memory}";
-                else if (distinctGpus > 1 && distinctMemory == 1)
+                if (distinctMemory > 1)
+                {
+                    if (distinctGpus > 1)
+                        benchmarkedPartSelector = g => $"{g.Cpu} - {g.Gpu} - {g.Memory}";
+                    else
+                        benchmarkedPartSelector = g => $"{g.Cpu} - {g.Memory}";
+                }
+                else if (distinctGpus > 1)
                     benchmarkedPartSelector = g => $"{g.Cpu} - {g.Gpu}";
-                else if (distinctMemory == 1 && distinctGpus == 1)
+                else
                     benchmarkedPartSelector = g => g.Cpu;
             }
             else if (distinctGpus > 1)
@@ -34,10 +39,6 @@
             else if (distinctMemory > 1)
             {
                 benchmarkedPartSelector = g => g.Memory;
-            }
-            else
-            {
-                benchmarkedPartSelector = g => $"{g.Cpu} - {g.Gpu} - {g.Memory}";
             }
 
             return captures.GroupBy(c => $"{c.Cpu}|{c.Gpu}|{c.Memory}")

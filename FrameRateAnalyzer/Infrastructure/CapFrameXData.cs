@@ -74,6 +74,6 @@ namespace FramerateAnalyzer.Infrastructure
 
     public class CaptureData
     {
-        public List<double> TimeInSeconds { get; set; }
+        public List<double> MsBetweenPresents { get; set; }
     }
 }
