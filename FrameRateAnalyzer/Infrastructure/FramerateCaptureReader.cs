@@ -93,7 +93,7 @@ namespace FramerateAnalyzer.Infrastructure
 
                 string gameName = sameSettingsCaptures.Key.GameName ?? "Unknown";
 
-                string gameSettings = sameSettingsCaptures.Key.Comment ?? "Unknown";
+                string captureDetails = sameSettingsCaptures.Key.Comment ?? "Unknown";
 
                 var gameAndSettingsCaptureData = sameSettingsCaptures.ToList();
 
@@ -104,7 +104,7 @@ namespace FramerateAnalyzer.Infrastructure
 
                 var creationDate = gameAndSettingsCaptureData.OrderBy(d => d.Info.CreationDate).Last().Info.CreationDate;
 
-                var capture = new FramerateCapture(cpu, gpu, memory, gameName, gameSettings, runs, creationDate);
+                var capture = new FramerateCapture(cpu, gpu, memory, gameName, captureDetails, runs, creationDate);
 
                 captures.Add(capture);
             }

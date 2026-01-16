@@ -40,6 +40,8 @@
             {
                 benchmarkedPartSelector = g => g.Memory;
             }
+            else
+                benchmarkedPartSelector = g => $"{g.Cpu} - {g.Gpu} - {g.Memory}";
 
             return captures.GroupBy(c => $"{c.Cpu}|{c.Gpu}|{c.Memory}")
                 .Select(c => new FramerateCaptureGroup(c.ToList(), benchmarkedPartSelector))

@@ -6,7 +6,7 @@ namespace FramerateAnalyzer.Domain;
 
 public class FramerateCapture
 {
-    public FramerateCapture(string cpu, string gpu, string memory, string gameName, string gameSettings,
+    public FramerateCapture(string cpu, string gpu, string memory, string gameName, string captureDetails,
         IList<FrameCaptureRun> runs, DateTime captureDate)
     {
         ArgumentNullException.ThrowIfNull(runs, nameof(runs));
@@ -15,7 +15,7 @@ public class FramerateCapture
         Gpu = gpu;
         Memory = memory;
         GameName = gameName;
-        GameSettings = gameSettings;
+        CaptureDetails = captureDetails;
         CreationDate = captureDate;
         Runs = runs;
 
@@ -43,7 +43,7 @@ public class FramerateCapture
 
     public string GameName { get; }
 
-    public string GameSettings { get; }
+    public string CaptureDetails { get; }
 
     public DateTime CreationDate { get; }
 
@@ -59,7 +59,7 @@ public class FramerateCapture
             Gpu,
             Memory,
             GameName,
-            GameSettings,
+            CaptureDetails,
             CreationDate
         }
         .Equals(new
@@ -68,18 +68,18 @@ public class FramerateCapture
             other.Gpu,
             other.Memory,
             other.GameName,
-            other.GameSettings,
+            other.CaptureDetails,
             other.CreationDate
         });
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Cpu, Gpu, Memory, GameName, GameSettings, CreationDate);
+        return HashCode.Combine(Cpu, Gpu, Memory, GameName, CaptureDetails, CreationDate);
     }
 
     public override string ToString()
     {
-        return $"{Cpu} - {Gpu} - {Memory} - {GameName} - {GameSettings} - {CreationDate}";
+        return $"{Cpu} - {Gpu} - {Memory} - {GameName} - {CaptureDetails} - {CreationDate}";
     }
 }
