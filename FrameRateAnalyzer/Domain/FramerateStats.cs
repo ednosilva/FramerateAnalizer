@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-
 namespace FramerateAnalyzer.Domain;
 
 public record FramerateStats
 {
+    private double? aggregatedFramerate;
+
     public FramerateStats(double average, double tenPercentLowAverage, double onePercentLowAverage,
         double zeroPointOnePercentLowAverage)
     {
@@ -27,27 +26,35 @@ public record FramerateStats
 
     public double ZeroPointOnePercentLowAverage { get; }
 
-    public double AggregatedFramerate()
+    public double AggregatedFramerate
     {
-        List<double> values = 
-        [
-            Average,
-            Average,
-            Average,
-            Average,
-            Average,
-            Average,
-            Average,
-            Average,
-            TenPercentLowAverage,
-            TenPercentLowAverage,
-            TenPercentLowAverage,
-            TenPercentLowAverage,
-            OnePercentLowAverage,
-            OnePercentLowAverage,
-            ZeroPointOnePercentLowAverage
-        ];
+        get
+        {
+            if (!aggregatedFramerate.HasValue)
+            {
+                List<double> valuesToAggregate =
+                [
+                    Average,
+                    Average,
+                    Average,
+                    Average,
+                    Average,
+                    Average,
+                    Average,
+                    Average,
+                    TenPercentLowAverage,
+                    TenPercentLowAverage,
+                    TenPercentLowAverage,
+                    TenPercentLowAverage,
+                    OnePercentLowAverage,
+                    OnePercentLowAverage,
+                    ZeroPointOnePercentLowAverage
+                ];
 
-        return Statistics.GeometricMean(values);
+                aggregatedFramerate = Statistics.GeometricMean(valuesToAggregate);
+            }
+
+            return aggregatedFramerate.Value;
+        }
     }
 };

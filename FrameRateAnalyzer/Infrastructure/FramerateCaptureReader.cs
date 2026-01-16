@@ -1,6 +1,7 @@
 using FramerateAnalyzer.Domain;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FramerateAnalyzer.Infrastructure
 {
@@ -61,18 +62,26 @@ namespace FramerateAnalyzer.Infrastructure
         public List<FramerateCapture> GetFramerateCaptures(IList<CapFrameXData> capFrameXData)
         {
             var captures = new List<FramerateCapture>();
-            
-            foreach (CapFrameXData data in capFrameXData)
-            {
-                IList<FrameCaptureRun>? runFrameCaptures = data.Runs == null ? [] :
-                    data.Runs.Select(r => new FrameCaptureRun(r.CaptureData.TimeInSeconds)).ToList();
 
-                string cpu = data.Info?.Processor
+            var groupedCaptures = capFrameXData
+                .GroupBy(c => new
+                {
+                    c.Info.Processor,
+                    c.Info.GPU,
+                    c.Info.SystemRam,
+                    c.Info.GameName,
+                    c.Info.ResolutionInfo,
+                    c.Info.Comment
+                });
+
+            foreach (var sameSettingsCaptures in groupedCaptures)
+            {
+                string cpu = sameSettingsCaptures.Key.Processor
                     .Replace("AMD", string.Empty)
                     .Replace("Intel", string.Empty)
                     .Trim() ?? "Unknown";
 
-                string gpu = data.Info?.GPU
+                string gpu = sameSettingsCaptures.Key.GPU
                     .Replace("NVIDIA", string.Empty)
                     .Replace("NVidia", string.Empty)
                     .Replace("GeForce", string.Empty)
@@ -80,10 +89,23 @@ namespace FramerateAnalyzer.Infrastructure
                     .Replace("Radeon", string.Empty)
                     .Trim() ?? "Unknown";
 
-                var capture = new FramerateCapture(data.FileName, cpu, gpu, data.Info?.SystemRam ?? "Unknown",
-                    data.Info?.GameName ?? "Unknown", data.Info?.Comment ?? "Unknown",
-                    data.Info?.CreationDate ?? DateTime.MinValue, runFrameCaptures);
-                
+                string memory = sameSettingsCaptures.Key.SystemRam ?? "Unknown";
+
+                string gameName = sameSettingsCaptures.Key.GameName ?? "Unknown";
+
+                string gameSettings = sameSettingsCaptures.Key.Comment ?? "Unknown";
+
+                var gameAndSettingsCaptureData = sameSettingsCaptures.ToList();
+
+                IList<FrameCaptureRun> runs = gameAndSettingsCaptureData
+                    .SelectMany(data => data.Runs ?? [])
+                    .Select(r => new FrameCaptureRun(r.CaptureData.TimeInSeconds))
+                    .ToList();
+
+                var creationDate = gameAndSettingsCaptureData.OrderBy(d => d.Info.CreationDate).First().Info.CreationDate;
+
+                var capture = new FramerateCapture(cpu, gpu, memory, gameName, gameSettings, runs, creationDate);
+
                 captures.Add(capture);
             }
             

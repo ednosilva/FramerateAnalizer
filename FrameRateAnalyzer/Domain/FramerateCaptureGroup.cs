@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing.Printing;
-using System.Linq;
-
 namespace FramerateAnalyzer.Domain;
 
 public class FramerateCaptureGroup
@@ -23,7 +18,7 @@ public class FramerateCaptureGroup
         FramerateCapture firstCapture = captures.First();
 
         Cpu = firstCapture.Cpu;
-        Gpu = firstCapture.Cpu;
+        Gpu = firstCapture.Gpu;
         Memory = firstCapture.Memory;
         Captures = captures;
 
