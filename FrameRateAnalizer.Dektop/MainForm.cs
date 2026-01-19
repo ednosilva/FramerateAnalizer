@@ -55,7 +55,7 @@ namespace FrameRateAnalizer
             dgvFiles.Columns.Add("CPU", "CPU");
             dgvFiles.Columns.Add("GPU", "GPU");
             dgvFiles.Columns.Add("GameName", "Game");
-            dgvFiles.Columns.Add("GameSettings", "Game Settings");
+            dgvFiles.Columns.Add("CaptureDetails", "Capture Details");
             dgvFiles.Columns.Add("AverageFps", "Avg FPS");
             dgvFiles.Columns.Add("TenPercentLowFramerate", "10% Low Avg FPS");
             dgvFiles.Columns.Add("OnePercentLowFramerate", "1% Low Avg FPS");
@@ -64,7 +64,7 @@ namespace FrameRateAnalizer
             dgvFiles.Columns["CPU"].FillWeight = 160;
             dgvFiles.Columns["GPU"].FillWeight = 180;
             dgvFiles.Columns["GameName"].FillWeight = 200;
-            dgvFiles.Columns["GameSettings"].FillWeight = 160;
+            dgvFiles.Columns["CaptureDetails"].FillWeight = 160;
         }
 
         private void InitializeComponent()
@@ -115,7 +115,7 @@ namespace FrameRateAnalizer
             btnLoadFiles.Name = "btnLoadFiles";
             btnLoadFiles.Size = new Size(120, 29);
             btnLoadFiles.TabIndex = 1;
-            btnLoadFiles.Text = "Load Files";
+            btnLoadFiles.Text = "Load Capture Files";
             btnLoadFiles.UseVisualStyleBackColor = true;
             btnLoadFiles.Click += BtnLoadFiles_Click;
             // 
@@ -372,7 +372,7 @@ namespace FrameRateAnalizer
                             capture.Cpu,
                             capture.Gpu,
                             capture.GameName,
-                            capture.GameSettings,
+                            capture.CaptureDetails,
                             capture.Stats.Average.ToString("N1"),
                             capture.Stats.TenPercentLowAverage.ToString("N1"),
                             capture.Stats.OnePercentLowAverage.ToString("N1"),
@@ -429,7 +429,7 @@ namespace FrameRateAnalizer
         {
             var statsText = new System.Text.StringBuilder();
             statsText.AppendLine($"=== ESTATÍSTICAS DO ARQUIVO ===\n");
-            statsText.AppendLine($"Arquivo: {capture.FileName}");
+            //statsText.AppendLine($"Arquivo: {capture.FileName}");
             statsText.AppendLine($"Jogo: {capture.GameName}");
             statsText.AppendLine($"Número de Runs: {capture.Runs.Count}\n");
 
@@ -493,7 +493,7 @@ namespace FrameRateAnalizer
             }
 
             chartFrameTimes.Titles.Clear();
-            chartFrameTimes.Titles.Add($"Frame Times - {capture.FileName}");
+            //chartFrameTimes.Titles.Add($"Frame Times - {capture.FileName}");
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)

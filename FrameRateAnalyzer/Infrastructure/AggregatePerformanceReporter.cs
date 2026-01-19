@@ -47,7 +47,7 @@ namespace FrameRateAnalizer.Infrastructure
                 {
                     if (firstModel)
                     {
-                        string gameContext = $"{capture.GameSettings} {capture.GameName}";
+                        string gameContext = $"{capture.CaptureDetails} {capture.GameName}";
 
                         header += $"{gameContext} Avg{delimiter}";
                         header += $"{gameContext} 10% Low Avg{delimiter}";
