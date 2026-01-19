@@ -30,8 +30,8 @@
                                     <MudButton Variant="Variant.Filled"
                                                Color="MudBlazor.Color.Primary"
                                                StartIcon="@Icons.Material.Filled.CloudUpload"
-                                               Style="width:200px">
-                                        Load Files
+                                               Style="width:240px">
+                                        Load Capture Files
                                     </MudButton>
                                 </ActivatorContent>
                             </MudFileUpload>
@@ -41,7 +41,7 @@
                                 <MudButton Variant="Variant.Filled"
                                            Color="MudBlazor.Color.Secondary"
                                            OnClick="CopyToClipboard"
-                                           Style="width:200px">
+                                           Style="width:240px">
                                     Report Performance
                                 </MudButton>
                             }
@@ -64,7 +64,7 @@
                                 <MudSelect @bind-Value="selectedGameSettings"
                                            Label="Graphic Settigns"
                                            FullWidth="false">
-                                    @foreach (var setting in gameSettings)
+                                    @foreach (var setting in captureDetails)
                                     {
                                         <MudSelectItem Value="@setting">@setting</MudSelectItem>
                                     }
@@ -75,10 +75,10 @@
                 </ToolBarContent>
                 <Columns>
                     <PropertyColumn Property="x => x.GameName" Title="Game" />
-                    <PropertyColumn Property="x => x.GameSettings" Title="Game Settings" />
                     <PropertyColumn Property="x => x.Cpu" Title="CPU" />
                     <PropertyColumn Property="x => x.Gpu" Title="GPU" />
                     <PropertyColumn Property="x => x.Memory" Title="Memory" />
+                    <PropertyColumn Property="x => x.CaptureDetails" Title="Capture Details" />
                     <PropertyColumn Property="x => x.Stats.Average" Title="Avg FPS" Culture="cultureInfo"
                         Format="F1" CellStyle="text-align: right;" />
                     <PropertyColumn Property="x => x.Stats.TenPercentLowAverage" Title="10% Low FPS"
@@ -152,7 +152,7 @@
     IList<IBrowserFile> files = new List<IBrowserFile>();
 
     List<string> games = [];
-    List<string> gameSettings = [];
+    List<string> captureDetails = [];
 
     string selectedGame = string.Empty;
     string selectedGameSettings = string.Empty;
@@ -198,8 +198,8 @@
             .Distinct()
             .ToList();
 
-        gameSettings = Captures
-            .Select(x => x.GameSettings)
+        captureDetails = Captures
+            .Select(x => x.CaptureDetails)
             .Distinct()
             .ToList();
     }
