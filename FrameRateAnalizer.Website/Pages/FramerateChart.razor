@@ -39,9 +39,9 @@
     }
 } *@
 
-<Tabs>
+<Tabs Class="mx-7">
     <TabPane Key="1">
-        <TabTemplate>示例1</TabTemplate>
+        <TabTemplate>Framerate</TabTemplate>
         <ChildContent>
             <Bar Data="data1" Config="config1"/>
         </ChildContent>
@@ -65,25 +65,25 @@
                 {
                     title = group.Cpu,
                     label = "Average",
-                    data = group.Stats.Average
+                    data = Math.Round(group.Stats.Average, 1)
                 },
                 new
                 {
                     title = group.Cpu,
                     label = "10% Low",
-                    data = group.Stats.TenPercentLowAverage
+                    data = Math.Round(group.Stats.TenPercentLowAverage, 1)
                 },
                 new
                 {
                     title = group.Cpu,
                     label = "1% Low",
-                    data = group.Stats.OnePercentLowAverage
+                    data = Math.Round(group.Stats.OnePercentLowAverage, 1)
                 },
                 new
                 {
                     title = group.Cpu,
                     label = "0.1% Low",
-                    data = group.Stats.ZeroPointOnePercentLowAverage
+                    data = Math.Round(group.Stats.ZeroPointOnePercentLowAverage, 1)
                 }
             };
 
@@ -96,15 +96,17 @@
         Title = new Title
         {
             Visible = true,
-            Text = "百分比堆叠条形图"
+            Text = "Framerate"
         },
         XField = "data",
         YField = "title",
         SeriesField = "label",
-        Color = new[] {"#2582a1", "#f88c24", "#c52125", "#87f4d0"},
-        Label = new BarViewConfigLabel
+        Color = new[] { "#1f77b4", "#2ca02c", "#ff7f0e", "#ff4d00" },
+        Label = new BarViewConfigLabel 
         {
-            Visible = true
+            Visible = true,
+            Position = "top",
+            AdjustColor = true
         }
     };
 }

@@ -1,8 +1,11 @@
-﻿@using ApexCharts
+﻿@using AntDesign
+@using AntDesign.Charts
 @using FramerateAnalyzer.Domain
 @using System.Threading.Tasks
+@using System.Text.Json
+@using Title = AntDesign.Charts.Title
 
-<ApexChart @ref="chart" TItem="FramerateCaptureGroup" Title="Relativae Performance" Options=options OnDataPointSelection="DataPointSelected">
+@* <ApexChart @ref="chart" TItem="FramerateCaptureGroup" Title="Relativae Performance" Options=options OnDataPointSelection="DataPointSelected">
     <ApexPointSeries TItem="FramerateCaptureGroup"
                     Items="CaptureGroups"
                     Name="Relative Performance"
@@ -131,4 +134,58 @@
 
         groups = groups.OrderByDescending(g => g.Value).ToDictionary();
     }
+} *@
+
+
+<Tabs Class="mx-7">
+    <TabPane Key="1">
+        <TabTemplate>Relative Performance</TabTemplate>
+        <ChildContent>
+            <Bar Data="data1" Config="config1" />
+        </ChildContent>
+    </TabPane>
+</Tabs>
+
+@code {
+    [Parameter]
+    public IList<FramerateCaptureGroup> CaptureGroups { get; set; }
+
+    List<object> data1 = new();
+
+    private FramerateCaptureGroup referenceCaptureGroup;
+
+    protected override void OnInitialized()
+    {
+        foreach (var group in CaptureGroups)
+        {
+            referenceCaptureGroup = CaptureGroups.First();
+
+            List<object> data = new List<object>()
+            {
+                new
+                {
+                    title = group.BenchmarkedParts,
+                    label = group.BenchmarkedParts,
+                    data = Math.Round(group.RelativePerformance(referenceCaptureGroup).AggregatedFramerate, 1)
+                }
+            };
+
+            data1.AddRange(data);
+        }
+    }
+
+    readonly BarConfig config1 = new BarConfig
+    {
+        Title = new Title
+        {
+            Visible = true,
+            Text = "Relative Performance"
+        },
+        XField = "data",
+        YField = "title",
+        ConversionTag = new ConversionTagOptions
+        {
+            Visible = true
+        }
+    };
 }

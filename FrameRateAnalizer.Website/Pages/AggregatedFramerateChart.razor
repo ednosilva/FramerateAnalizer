@@ -44,9 +44,9 @@
 
 @if (data1.Any())
 {
-    <Tabs>
+    <Tabs Class="mx-7">
         <TabPane Key="1">
-            <TabTemplate>Teste</TabTemplate>
+            <TabTemplate>Aggregated Framerate</TabTemplate>
             <ChildContent>
                 <Bar Data="data1" Config="config1" />
             </ChildContent>
@@ -68,18 +68,24 @@
             data1.Add(new
             {
                 title = group.Cpu,
-                data = group.Stats.AggregatedFramerate
+                data = Math.Round(group.Stats.AggregatedFramerate, 1)
             });
         }
     }
 
     BarConfig config1 = new BarConfig
     {
+        Title = new Title
+        {
+            Visible = true,
+            Text = "Aggregated Framerate"
+        },
         XField = "data",
         YField = "title",
         Label = new BarViewConfigLabel
         {
-            Visible = true
+            Visible = true,
+            Position = "middle"
         }
     };
 }
