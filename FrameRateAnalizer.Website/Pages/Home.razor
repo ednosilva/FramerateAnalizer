@@ -15,7 +15,7 @@
 <MudContainer MaxWidth="MaxWidth.ExtraLarge">
     <MudStack>
         <MudPaper Elevation="0" Outlined Class="mt-2">
-            <MudDataGrid T="FramerateCapture" Items="@Captures" RowClick="@RowClicked" Height="303px" Style="table-layout: fixed;"
+            <MudDataGrid T="FramerateCapture" Items="@Captures" Height="303px" Style="table-layout: fixed;"
                          Loading="loading" Dense Hover FixedHeader Groupable>
                 <ToolBarContent>
                     <MudStack Row AlignItems="AlignItems.Center" Class="w-100">
@@ -95,17 +95,17 @@
         {
             <MudPaper Elevation="0" Outlined Class="my-2">
                 <MudGrid>
-                    <MudItem xs="12" lg="6">
+                    <MudItem xs="12" lg="12">
                         <MudPaper Elevation="0">
                             <FramerateChart CaptureGroups="CaptureGroups"/>
                         </MudPaper>
                     </MudItem>
-                    <MudItem xs="12" lg="6">
+                    <MudItem xs="12" lg="12">
                         <MudPaper Elevation="0">
                             <AggregatedFramerateChart CaptureGroups="CaptureGroups" />
                         </MudPaper>
                     </MudItem>
-                    <MudItem xs="12" lg="6">
+                    <MudItem xs="12" lg="12">
                         <MudPaper Elevation="0">
                             <RelativePerformanceChart CaptureGroups="CaptureGroups" />
                         </MudPaper>
@@ -143,12 +143,7 @@
     IList<FramerateCapture> Captures = [];
 
     IList<FramerateCaptureGroup> CaptureGroups = [];
-
-    //IList<ChartSeries> selectedFrameTime;
-
-    //CapFrameXData selectedRow = new CapFrameXData();
-
-    //List<decimal> frameTimes = new List<decimal>();
+    
     IList<IBrowserFile> files = new List<IBrowserFile>();
 
     List<string> games = [];
@@ -215,13 +210,5 @@
 
         await JS.InvokeVoidAsync("navigator.clipboard.writeText", report);
         Snackbar.Add("Copied!", Severity.Success);
-    }
-
-    private async Task RowClicked(DataGridRowClickEventArgs<FramerateCapture> args)
-    {
-        //var capture = args.Item;
-        //var data = Data.FirstOrDefault(x => x.FileName == capture.FileName);
-
-        //selectedRow = data;
     }
 }

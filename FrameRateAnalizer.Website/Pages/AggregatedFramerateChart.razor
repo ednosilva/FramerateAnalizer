@@ -3,57 +3,17 @@
 @using FramerateAnalyzer.Domain
 @using Title = AntDesign.Charts.Title
 
-@* <MudPaper Elevation="0" Class="d-flex justify-center align-center">
-    <MudChart ChartType="ChartType.Bar" ChartSeries="@_series" @bind-SelectedIndex="_index" Width="600px" Height="400px" XAxisLabels="@_xAxisLabels" AxisChartOptions="_axisChartOptions" />
-</MudPaper>
-
-@code {
-    [Parameter]
-    public IList<FramerateCaptureGroup> CaptureGroups { get; set; }
-
-    private int _index = -1;
-
-    private AxisChartOptions _axisChartOptions = new AxisChartOptions();
-
-    private List<ChartSeries> _series = new List<ChartSeries>();
-
-    private string[] _xAxisLabels;
-
-    protected override void OnInitialized()
-    {
-        _axisChartOptions.MatchBoundsToSize = true;
-
-        _xAxisLabels = CaptureGroups
-        .Select(c => c.Cpu)
-        .ToArray();
-
-        _series = new List<ChartSeries>
-        {
-            new ChartSeries
-            {
-                Name = "Average FPS",
-                Data = CaptureGroups
-                    .Select(c => c.Stats.AggregatedFramerate)
-                    .ToArray()
-            }
-        };
-
-        base.OnInitialized();
-    }
-} *@
-
 @if (data1.Any())
 {
     <Tabs Class="mx-7">
         <TabPane Key="1">
             <TabTemplate>Aggregated Framerate</TabTemplate>
             <ChildContent>
-                <Bar Data="data1" Config="config1" />
+                <Bar Data="data1" Config="config1"  />
             </ChildContent>
         </TabPane>
     </Tabs>
 }
-
 
 @code {
     [Parameter]
@@ -80,6 +40,7 @@
             Visible = true,
             Text = "Aggregated Framerate"
         },
+        Height = 200,
         XField = "data",
         YField = "title",
         Label = new BarViewConfigLabel

@@ -3,42 +3,6 @@
 @using FramerateAnalyzer.Domain
 @using Title = AntDesign.Charts.Title
 
-@* <MudPaper Elevation="0" Class="d-flex justify-center align-center">
-    <MudChart ChartType="MudBlazor.ChartType.Bar" ChartSeries="@_series" @bind-SelectedIndex="_index" Width="600px" Height="400px" XAxisLabels="@_xAxisLabels" AxisChartOptions="_axisChartOptions" />
-</MudPaper>
-
-@code {
-    [Parameter]
-    public IList<FramerateCaptureGroup> CaptureGroups { get; set; }
-
-    private int _index = -1;
-
-    private AxisChartOptions _axisChartOptions = new AxisChartOptions();
-
-    private List<ChartSeries> _series = new List<ChartSeries>();
-
-    private string[] _xAxisLabels;
-
-    protected override void OnInitialized()
-    {
-        _axisChartOptions.MatchBoundsToSize = true;
-
-        foreach (FramerateCaptureGroup group in CaptureGroups)
-        {
-            ChartSeries series = new ChartSeries()
-            {
-                Name = group.Cpu,
-                Data = [group.Stats.Average, group.Stats.TenPercentLowAverage, group.Stats.OnePercentLowAverage, group.Stats.ZeroPointOnePercentLowAverage]
-            };
-            _series.Add(series);
-        };
-
-        _xAxisLabels = ["Average", "10% Low", "1% Low", "0.1% Low"];
-
-        base.OnInitialized();
-    }
-} *@
-
 <Tabs Class="mx-7">
     <TabPane Key="1">
         <TabTemplate>Framerate</TabTemplate>
@@ -98,15 +62,21 @@
             Visible = true,
             Text = "Framerate"
         },
+        Height = 200,
         XField = "data",
         YField = "title",
         SeriesField = "label",
-        Color = new[] { "#1f77b4", "#2ca02c", "#ff7f0e", "#ff4d00" },
+        Color = new[] { "#1e88e5d9", "#1976d2d9", "#1565c0d9", "#0d47a1d9" },
         Label = new BarViewConfigLabel 
         {
             Visible = true,
-            Position = "top",
-            AdjustColor = true
+            Position = "right",
+            OffsetX = -50,
+            Style = new TextStyle
+            {
+                Fill = "#FFFFFF",
+                FontWeight = 700
+            },
         }
     };
 }
