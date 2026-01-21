@@ -1,10 +1,10 @@
 namespace FramerateAnalyzer.Domain;
 
-public record FramerateStats
+public record FrameRateStats
 {
     private double? aggregatedFramerate;
 
-    public FramerateStats(double average, double tenPercentLowAverage, double onePercentLowAverage,
+    public FrameRateStats(double average, double tenPercentLowAverage, double onePercentLowAverage,
         double zeroPointOnePercentLowAverage)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(average, nameof(average));
@@ -26,7 +26,7 @@ public record FramerateStats
 
     public double ZeroPointOnePercentLowAverage { get; }
 
-    public double AggregatedFramerate
+    public double AggregatedFrameRate
     {
         get
         {
@@ -56,5 +56,17 @@ public record FramerateStats
 
             return aggregatedFramerate.Value;
         }
+    }
+
+    public FrameRateStats RelativePerformance(FrameRateStats reference)
+    {
+        ArgumentNullException.ThrowIfNull(reference, nameof(reference));
+
+        double average = Average / reference.Average;
+        double tenPercentLowAverage = TenPercentLowAverage / reference.TenPercentLowAverage;
+        double onePercentLowAverage = OnePercentLowAverage / reference.OnePercentLowAverage;
+        double zeroPointOnePercentLowAverage = ZeroPointOnePercentLowAverage / reference.ZeroPointOnePercentLowAverage;
+
+        return new FrameRateStats(average, tenPercentLowAverage, onePercentLowAverage, zeroPointOnePercentLowAverage);
     }
 };

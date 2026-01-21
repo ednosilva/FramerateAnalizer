@@ -1,25 +1,34 @@
 ﻿@using ApexCharts
 @using FramerateAnalyzer.Domain
 
-<ApexChart TItem="FramerateCaptureGroup" Title="Aggregated Framerate (Weighted GeoMean)" Options=options OnClick="PointSelected">
-    <ApexPointSeries TItem="FramerateCaptureGroup"
-                        Items="CaptureGroups"
-                        Name="Aggregated Framerate"                        
-                        SeriesType="SeriesType.Bar"
-                        XValue="@(e => e.BenchmarkedParts)"
-                        YAggregate="@(e => (decimal)e.Sum(g => g.Stats.AggregatedFramerate))"
-                        ShowDataLabels />
-</ApexChart>
+@if (BenchmarkResults != null && options != null)
+{
+    <ApexChart TItem="FrameRateCaptureGroup" Title="@Title" Options=options OnClick="PointSelected">
+        <ApexPointSeries TItem="FrameRateBenchmarkResult"
+                         Items="BenchmarkResults"
+                         Name="Aggregated Frame Rate"
+                         SeriesType="SeriesType.Bar"
+                         XValue="@(e => e.BenchmarkedParts)"
+                         YAggregate="@(e => (decimal)e.Sum(g => g.Stats.AggregatedFrameRate))"
+                         ShowDataLabels />
+    </ApexChart>
+}
 
 @code {
     [Parameter]
-    public IList<FramerateCaptureGroup> CaptureGroups { get; set; }
+    public string Title { get; set; }
 
-    private ApexChartOptions<FramerateCaptureGroup> options;
+    [Parameter]
+    public IList<FrameRateBenchmarkResult>? BenchmarkResults { get; set; }
+
+    private ApexChartOptions<FrameRateCaptureGroup>? options;
 
     protected override void OnInitialized()
     {
-        options = new ApexChartOptions<FramerateCaptureGroup>
+        if (BenchmarkResults == null)
+            return;
+
+        options = new ApexChartOptions<FrameRateCaptureGroup>
         {
             Chart = new Chart
             {
@@ -55,7 +64,7 @@
                     },
                     Show = false
                 },
-                Categories = CaptureGroups.Select(g => g.BenchmarkedParts.Split("-"))
+                Categories = BenchmarkResults.Select(g => string.Join('\n', g.BenchmarkedParts)).ToList()
             },
             Yaxis = new List<YAxis> { 
                 new YAxis
@@ -89,7 +98,7 @@
         base.OnInitialized();
     }
 
-    private void PointSelected(SelectedData<FramerateCaptureGroup> data)
+    private void PointSelected(SelectedData<FrameRateCaptureGroup> data)
     {
         //reference = data;
     }

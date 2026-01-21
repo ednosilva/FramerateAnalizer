@@ -4,11 +4,12 @@ namespace FrameRateAnalizer.Infrastructure
 {
     public class AggregatePerformanceReporter
     {
-        public string ReportPerformance(IList<FramerateCaptureGroup> captureGroups,
-            FramerateCaptureGroup referenceCaptureGroup, string delimiter)
+        public string ReportPerformance(IList<FrameRateCaptureGroup> captureGroups,
+            FrameRateCaptureGroup referenceCaptureGroup,
+            Func<IFrameRateBenchmarkResult, IList<string>> benchmarkedPartsSelector, string delimiter)
         {
             captureGroups = captureGroups
-                .OrderByDescending(p => p.Stats.AggregatedFramerate)
+                .OrderByDescending(p => p.Stats.AggregatedFrameRate)
                 .ToList();
 
             var resultRows = new List<string>();
@@ -29,9 +30,9 @@ namespace FrameRateAnalizer.Infrastructure
 
             foreach (var group in captureGroups)
             {
-                var relativePerformance = group.RelativePerformance(referenceCaptureGroup);
+                var relativePerformance = group.Stats.RelativePerformance(referenceCaptureGroup.Stats);
 
-                string row = $"{group.BenchmarkedParts}{delimiter}";
+                string row = $"{string.Join(' ', benchmarkedPartsSelector(group))}{delimiter}";
 
                 row += $"{relativePerformance.Average:N3}{delimiter}";
                 row += $"{relativePerformance.TenPercentLowAverage:N3}{delimiter}";

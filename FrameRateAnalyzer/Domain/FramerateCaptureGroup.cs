@@ -1,9 +1,8 @@
 namespace FramerateAnalyzer.Domain;
 
-public class FramerateCaptureGroup
+public class FrameRateCaptureGroup : IFrameRateBenchmarkResult
 {
-    public FramerateCaptureGroup(IList<FramerateCapture> captures,
-        Func<FramerateCaptureGroup, string> benchmarkedPartSelector)
+    public FrameRateCaptureGroup(IList<FramerateCapture> captures)
     {
         ArgumentNullException.ThrowIfNull(captures, nameof(captures));
 
@@ -22,39 +21,32 @@ public class FramerateCaptureGroup
         Memory = firstCapture.Memory;
         Captures = captures;
 
-        BenchmarkedParts = benchmarkedPartSelector(this);
+        IList<FrameRateStats> captureStats = captures.Select(c => c.Stats).ToList();
 
-        SetStats(captures);
+        double averageGeoMean = Statistics.GeometricMean(captureStats.Select(s => s.Average));
+        double tenPercentLowAverageGeoMean = Statistics.GeometricMean(captureStats.Select(s => s.TenPercentLowAverage));
+        double onePercentLowAverageGeoMean = Statistics.GeometricMean(captureStats.Select(s => s.OnePercentLowAverage));
+        double zeroPointOnePercentLowAverageGeoMean = Statistics.GeometricMean(captureStats.Select(s => s.ZeroPointOnePercentLowAverage));
+
+        Stats = new FrameRateStats(averageGeoMean, tenPercentLowAverageGeoMean, onePercentLowAverageGeoMean,
+            zeroPointOnePercentLowAverageGeoMean);
     }
 
-    private void SetStats(IList<FramerateCapture> framerateCaptures)
-    {
-        IList<FramerateStats> captureStats = framerateCaptures.Select(c => c.Stats).ToList();
+    //public FrameRateStats RelativePerformance(FrameRateCaptureGroup reference)
+    //{
+    //    ArgumentNullException.ThrowIfNull(reference, nameof(reference));
 
-        double average = captureStats.Average(s => s.Average);
-        double tenPercentLowAverage = captureStats.Average(s => s.TenPercentLowAverage);
-        double onePercentLowAverage = captureStats.Average(s => s.OnePercentLowAverage);
-        double zeroPointOnePercentLowAverage = captureStats.Average(s => s.ZeroPointOnePercentLowAverage);
+    //    double average = Stats.Average / reference.Stats.Average;
 
-        Stats = new FramerateStats(average, tenPercentLowAverage, onePercentLowAverage,
-            zeroPointOnePercentLowAverage);
-    }
+    //    double tenPercentLowAverage = Stats.TenPercentLowAverage / reference.Stats.TenPercentLowAverage;
 
-    public FramerateStats RelativePerformance(FramerateCaptureGroup reference)
-    {
-        ArgumentNullException.ThrowIfNull(reference, nameof(reference));
+    //    double onePercentLowAverage = Stats.OnePercentLowAverage / reference.Stats.OnePercentLowAverage;
 
-        double average = Stats.Average / reference.Stats.Average;
+    //    double zeroPointOnePercentLowAverage = Stats.ZeroPointOnePercentLowAverage /
+    //        reference.Stats.ZeroPointOnePercentLowAverage;
 
-        double tenPercentLowAverage = Stats.TenPercentLowAverage / reference.Stats.TenPercentLowAverage;
-
-        double onePercentLowAverage = Stats.OnePercentLowAverage / reference.Stats.OnePercentLowAverage;
-
-        double zeroPointOnePercentLowAverage = Stats.ZeroPointOnePercentLowAverage /
-            reference.Stats.ZeroPointOnePercentLowAverage;
-
-        return new FramerateStats(average, tenPercentLowAverage, onePercentLowAverage, zeroPointOnePercentLowAverage);
-    }
+    //    return new FrameRateStats(average, tenPercentLowAverage, onePercentLowAverage, zeroPointOnePercentLowAverage);
+    //}
 
     public string Cpu { get; }
 
@@ -62,11 +54,9 @@ public class FramerateCaptureGroup
 
     public string Memory { get; }
 
-    public string BenchmarkedParts { get; }
-
     public IList<FramerateCapture> Captures { get; }
 
-    public FramerateStats Stats { get; private set; }
+    public FrameRateStats Stats { get; private set; }
 
     public override string ToString()
     {

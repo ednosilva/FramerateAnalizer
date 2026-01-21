@@ -76,10 +76,10 @@
                 </ToolBarContent>
                 <Columns>
                     <PropertyColumn Property="x => x.GameName" Title="Game" />
+                    <PropertyColumn Property="x => x.CaptureDetails" Title="Capture Details" />
                     <PropertyColumn Property="x => x.Cpu" Title="CPU" />
                     <PropertyColumn Property="x => x.Gpu" Title="GPU" />
                     <PropertyColumn Property="x => x.Memory" Title="Memory" />
-                    <PropertyColumn Property="x => x.CaptureDetails" Title="Capture Details" />
                     <PropertyColumn Property="x => x.Stats.Average" Title="Avg FPS" Culture="cultureInfo"
                         Format="F1" CellStyle="text-align: right;" />
                     <PropertyColumn Property="x => x.Stats.TenPercentLowAverage" Title="10% Low FPS"
@@ -98,19 +98,26 @@
                 <MudGrid>
                     <MudItem xs="12" lg="6">
                         <MudPaper Elevation="0">
-                            <FramerateChart CaptureGroups="CaptureGroups"/>
+                            <FrameRateChart Title="Aggregated Frame Rate (Geometric Mean)" BenchmarkResults="OverallBenchmarkResults" />
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="12" lg="6">
                         <MudPaper Elevation="0">
-                            <AggregatedFramerateChart CaptureGroups="CaptureGroups" />
+                            <RelativePerformanceChart Title="Relativae Performance" BenchmarkResults="OverallBenchmarkResults" />
                         </MudPaper>
                     </MudItem>
-                    <MudItem xs="12" lg="6">
-                        <MudPaper Elevation="0">
-                            <RelativePerformanceChart CaptureGroups="CaptureGroups" />
-                        </MudPaper>
-                    </MudItem>
+
+                    @foreach (var gameCaptures in Captures.GroupBy(c => $"{c.GameName} {c.CaptureDetails}"))
+                    {
+                        var gameResults = gameCaptures
+                            .Select(c => new FrameRateBenchmarkResult(BenchmarkedPartsSelector(c), c.Stats)).ToList();
+
+                        <MudItem xs="12" lg="6">
+                            <MudPaper Elevation="0">
+                                <FrameRateChart Title="@gameCaptures.Key" BenchmarkResults="gameResults" />
+                            </MudPaper>
+                        </MudItem>
+                    }
                 </MudGrid>
             </MudPaper>
         }
@@ -143,13 +150,16 @@
 
     IList<FramerateCapture> Captures = [];
 
-    IList<FramerateCaptureGroup> CaptureGroups = [];
+    IList<FrameRateCaptureGroup> CaptureGroups = [];
+
+    Func<IFrameRateBenchmarkResult, IList<string>>? BenchmarkedPartsSelector = null;
+
+    IList<FrameRateBenchmarkResult> OverallBenchmarkResults = [];
 
     //IList<ChartSeries> selectedFrameTime;
 
     //CapFrameXData selectedRow = new CapFrameXData();
 
-    //List<decimal> frameTimes = new List<decimal>();
     IList<IBrowserFile> files = new List<IBrowserFile>();
 
     List<string> games = [];
@@ -190,7 +200,14 @@
         }
 
         Captures = capFrameXReader.GetFramerateCaptures(Data);
+
         CaptureGroups = FramerateCaptureGroupFactory.Create(Captures);
+
+        BenchmarkedPartsSelector = FramerateCaptureGroupFactory
+            .BenchmarkedPartsSelector(Captures);
+
+        OverallBenchmarkResults = CaptureGroups
+            .Select(c => new FrameRateBenchmarkResult(BenchmarkedPartsSelector(c), c.Stats)).ToList();
 
         loading = false;
 
@@ -207,12 +224,12 @@
 
     private async Task CopyToClipboard()
     {
-        FramerateCaptureGroup referenceCaptureGroup = CaptureGroups
-            .OrderByDescending(games => games.Stats.AggregatedFramerate)
+        FrameRateCaptureGroup referenceCaptureGroup = CaptureGroups
+            .OrderByDescending(games => games.Stats.AggregatedFrameRate)
             .First();
 
         string report = new AggregatePerformanceReporter()
-        .ReportPerformance(CaptureGroups, referenceCaptureGroup, ";");
+            .ReportPerformance(CaptureGroups, referenceCaptureGroup, BenchmarkedPartsSelector, ";");
 
         await JS.InvokeVoidAsync("navigator.clipboard.writeText", report);
         Snackbar.Add("Copied!", Severity.Success);

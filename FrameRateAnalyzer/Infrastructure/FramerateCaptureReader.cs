@@ -66,12 +66,12 @@ namespace FramerateAnalyzer.Infrastructure
             var groupedCaptures = capFrameXData
                 .GroupBy(c => new
                 {
-                    c.Info.Processor,
-                    c.Info.GPU,
-                    c.Info.SystemRam,
                     c.Info.GameName,
                     c.Info.ResolutionInfo,
-                    c.Info.Comment
+                    c.Info.Comment,
+                    c.Info.Processor,
+                    c.Info.GPU,
+                    c.Info.SystemRam                    
                 });
 
             foreach (var sameSettingsCaptures in groupedCaptures)
@@ -89,11 +89,11 @@ namespace FramerateAnalyzer.Infrastructure
                     .Replace("Radeon", string.Empty)
                     .Trim() ?? "Unknown";
 
-                string memory = sameSettingsCaptures.Key.SystemRam ?? "Unknown";
+                string memory = sameSettingsCaptures.Key.SystemRam.Trim() ?? "Unknown";
 
-                string gameName = sameSettingsCaptures.Key.GameName ?? "Unknown";
+                string gameName = sameSettingsCaptures.Key.GameName.Trim() ?? "Unknown";
 
-                string captureDetails = sameSettingsCaptures.Key.Comment ?? "Unknown";
+                string captureDetails = sameSettingsCaptures.Key.Comment.Trim() ?? "Unknown";
 
                 var gameAndSettingsCaptureData = sameSettingsCaptures.ToList();
 
@@ -109,7 +109,10 @@ namespace FramerateAnalyzer.Infrastructure
                 captures.Add(capture);
             }
             
-            return captures;
+            return captures
+                .OrderBy(c => $"{c.GameName} {c.CaptureDetails}")
+                .ThenByDescending(c => c.Stats.AggregatedFrameRate)
+                .ToList();
         }
     }
 }

@@ -18,7 +18,7 @@ public record FrameCaptureRun
 
     public IList<double> FrameTimes { get; private set; }
 
-    public FramerateStats Stats { get; private set; }
+    public FrameRateStats Stats { get; private set; }
 
     private void SetStats(/*double duration*/)
     {
@@ -30,7 +30,7 @@ public record FrameCaptureRun
         double onePercentLowAverage = GetFramerateLowAverage(sortedFrameTimes, 0.01);
         double zeroPointOnePercentLowAverage = GetFramerateLowAverage(sortedFrameTimes, 0.001);
 
-        Stats = new FramerateStats(average, tenPercentLowAverage, onePercentLowAverage, zeroPointOnePercentLowAverage);
+        Stats = new FrameRateStats(average, tenPercentLowAverage, onePercentLowAverage, zeroPointOnePercentLowAverage);
     }
 
     private static double GetFramerateLowAverage(List<double> sortedFrameTimes, double frameCountFactor)

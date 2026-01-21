@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace FrameRateAnalizer
@@ -504,11 +505,14 @@ namespace FrameRateAnalizer
 
         private void button2_Click(object sender, EventArgs e)
         {
-            IList<FramerateCaptureGroup> aggregatedPerformances = FramerateCaptureGroupFactory.Create(captures);
+            IList<FrameRateCaptureGroup> aggregatedPerformances = FramerateCaptureGroupFactory.Create(captures);
 
-            var reference = aggregatedPerformances.OrderByDescending(g => g.Stats.AggregatedFramerate).First();
+            var reference = aggregatedPerformances.OrderByDescending(g => g.Stats.AggregatedFrameRate).First();
 
-            string report = new AggregatePerformanceReporter().ReportPerformance(aggregatedPerformances, reference, "\t");
+            var selector = FramerateCaptureGroupFactory.BenchmarkedPartsSelector(captures);
+
+            string report = new AggregatePerformanceReporter()
+                .ReportPerformance(aggregatedPerformances, reference, selector, "\t");
 
             if (MessageBox.Show("Copy to Clipboard?", "Success", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 Clipboard.SetText(report);
@@ -521,11 +525,14 @@ namespace FrameRateAnalizer
 
         public Stream GeneratePerformanceCsv()
         {
-            IList<FramerateCaptureGroup> aggregatedPerformances = FramerateCaptureGroupFactory.Create(captures);
+            IList<FrameRateCaptureGroup> aggregatedPerformances = FramerateCaptureGroupFactory.Create(captures);
 
-            var reference = aggregatedPerformances.OrderByDescending(g => g.Stats.AggregatedFramerate).First();
+            var reference = aggregatedPerformances.OrderByDescending(g => g.Stats.AggregatedFrameRate).First();
 
-            string report = new AggregatePerformanceReporter().ReportPerformance(aggregatedPerformances, reference, ",");
+            var selector = FramerateCaptureGroupFactory.BenchmarkedPartsSelector(captures);
+
+            string report = new AggregatePerformanceReporter()
+                .ReportPerformance(aggregatedPerformances, reference, selector, ",");
 
             var file = "performance_report.csv";
 

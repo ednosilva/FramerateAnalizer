@@ -1,8 +1,22 @@
-﻿namespace FramerateAnalyzer.Domain
+﻿using System.Text.RegularExpressions;
+
+namespace FramerateAnalyzer.Domain
 {
     public class FramerateCaptureGroupFactory
     {
-        public static IList<FramerateCaptureGroup> Create(IList<FramerateCapture> captures)
+        public static IList<FrameRateCaptureGroup> Create(IList<FramerateCapture> captures)
+        {
+            ArgumentNullException.ThrowIfNull(captures, nameof(captures));
+
+            if (!captures.Any())
+                throw new ArgumentOutOfRangeException(nameof(captures));
+
+            return captures.GroupBy(c => $"{c.Cpu}|{c.Gpu}|{c.Memory}")
+                .Select(c => new FrameRateCaptureGroup(c.ToList()))
+                .ToList();
+        }
+
+        public static Func<IFrameRateBenchmarkResult, IList<string>> BenchmarkedPartsSelector(IList<FramerateCapture> captures)
         {
             ArgumentNullException.ThrowIfNull(captures, nameof(captures));
 
@@ -13,39 +27,35 @@
             int distinctGpus = captures.DistinctBy(c => c.Gpu).Count();
             int distinctMemory = captures.DistinctBy(c => c.Memory).Count();
 
-            Func<FramerateCaptureGroup, string>? benchmarkedPartSelector = null;
-
             if (distinctCpus > 1)
             {
                 if (distinctMemory > 1)
                 {
                     if (distinctGpus > 1)
-                        benchmarkedPartSelector = g => $"{g.Cpu} - {g.Gpu} - {g.Memory}";
+                        return g => [g.Cpu, g.Gpu, g.Memory];
                     else
-                        benchmarkedPartSelector = g => $"{g.Cpu} - {g.Memory}";
+                        return g => [g.Cpu, g.Memory];
                 }
                 else if (distinctGpus > 1)
-                    benchmarkedPartSelector = g => $"{g.Cpu} - {g.Gpu}";
+                    return g => [g.Cpu, g.Gpu];
                 else
-                    benchmarkedPartSelector = g => g.Cpu;
+                    return g => [g.Cpu];
             }
             else if (distinctGpus > 1)
             {
                 if (distinctMemory > 1)
-                    benchmarkedPartSelector = g => $"{g.Gpu} - {g.Memory}";
+                    return g => [g.Gpu, g.Memory];
                 else
-                    benchmarkedPartSelector = g => g.Gpu;
+                    return g => [g.Gpu];
             }
             else if (distinctMemory > 1)
             {
-                benchmarkedPartSelector = g => g.Memory;
+                return g => [g.Memory];
             }
             else
-                benchmarkedPartSelector = g => $"{g.Cpu} - {g.Gpu} - {g.Memory}";
+                return g => [g.Cpu, g.Gpu, g.Memory];
 
-            return captures.GroupBy(c => $"{c.Cpu}|{c.Gpu}|{c.Memory}")
-                .Select(c => new FramerateCaptureGroup(c.ToList(), benchmarkedPartSelector))
-                .ToList();
+            throw new ArgumentOutOfRangeException(nameof(captures));
         }
     }
 }

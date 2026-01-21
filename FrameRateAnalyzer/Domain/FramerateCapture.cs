@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace FramerateAnalyzer.Domain;
 
-public class FramerateCapture
+public class FramerateCapture : IFrameRateBenchmarkResult
 {
     public FramerateCapture(string cpu, string gpu, string memory, string gameName, string captureDetails,
         IList<FrameCaptureRun> runs, DateTime captureDate)
@@ -19,27 +15,29 @@ public class FramerateCapture
         CreationDate = captureDate;
         Runs = runs;
 
-        SetAggregatedStats(runs);
+        SetRunStats(runs);
     }
 
-    private void SetAggregatedStats(IList<FrameCaptureRun> runs)
+    private void SetRunStats(IList<FrameCaptureRun> runs)
     {
-        IList<FramerateStats> runStats = runs.Select(r => r.Stats).ToList();
+        IList<FrameRateStats> runStats = runs.Select(r => r.Stats).ToList();
 
         double average = runStats.Average(s => s.Average);
         double tenPercentLowAverage = runStats.Average(s => s.TenPercentLowAverage);
         double onePercentLowAverage = runStats.Average(s => s.OnePercentLowAverage);
         double zeroPointOnePercentLowAverage = runStats.Average(s => s.ZeroPointOnePercentLowAverage);
 
-        Stats = new FramerateStats(average, tenPercentLowAverage, onePercentLowAverage,
+        Stats = new FrameRateStats(average, tenPercentLowAverage, onePercentLowAverage,
             zeroPointOnePercentLowAverage);
     }
 
-    public string Cpu { get; }
+    public string Cpu { get; protected set; }
 
-    public string Gpu { get; }
+    public string Gpu { get; protected set; }
 
-    public string Memory { get; }
+    public string Memory { get; protected set; }
+
+    public FrameRateStats Stats { get; protected set; }
 
     public string GameName { get; }
 
@@ -48,8 +46,6 @@ public class FramerateCapture
     public DateTime CreationDate { get; }
 
     public IList<FrameCaptureRun> Runs { get; }
-
-    public FramerateStats Stats { get; private set; }
 
     public override bool Equals(object? obj)
     {
@@ -80,6 +76,6 @@ public class FramerateCapture
 
     public override string ToString()
     {
-        return $"{Cpu} - {Gpu} - {Memory} - {GameName} - {CaptureDetails} - {CreationDate}";
+        return $"{GameName} - {CaptureDetails} - {Cpu} - {Gpu} - {Memory} - {CreationDate}";
     }
 }
